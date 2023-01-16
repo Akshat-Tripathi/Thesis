@@ -1,21 +1,37 @@
 \chapter{Background}
 
-In this chapter we will\dots
+This chapter will provide the theoretical background for this thesis. First we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve. Next we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
 
-\section{Distributed Robotics}
-% Brief explanation of what it is
-% Why do we do this / advantages over non distributed robotics
-% 
+\section{Multi-Robot Systems} % QUESTION: Can I call this Distributed Robotics??
+The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competetively or collaboratively, coordinate statically or dynamically, communicate  explicitly or implictly, consist of homogeneous or heterogenous robots and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}.
 
-\section{Byzantine fault tolerance}
+\subsection{Competitive vs Collaborative Behavior}
+Multiple robots which share a common goal are considered to be behaving collaboratively, whereas if each robot aimed to complete its own goal at the expense of all others, it would be said to be behaving competetively \cite{MultiRobotCoordinationSurvey}. Examples of collaboration range from teams of robots constructing a habitat \cite{LunarHabitatConstruction} to 
+
+\subsection{Static vs Dynamic Coordination}
+\dots
+
+\subsection{Explicit vs Implicit Communication}
+\dots
+
+\subsection{Homogenous vs Heterogenous Robots}
+\dots
+
+\subsection{Centralised vs Decentralised Decision Making}
+\dots
+
+What's left (not just security)
+
 
 \section{Robot Web}
+
 \subsection{Factor Graphs}
 \subsection{Gaussian Belief Propagation}
 \subsection{Lie Theory}
 \subsection{Putting it all together}
 
 \section{Security Issues}
+\subsection{Byzantine fault tolerance}
 \subsection{Masquerade Attacks}
 \subsection{Sybil Attacks}
 

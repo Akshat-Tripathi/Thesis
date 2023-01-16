@@ -1,0 +1,21 @@
+\begin{thebibliography}{1}
+
+\bibitem{Robotweb}
+Murai R, Ortiz J, Saeedi S, Kelly PHJ, Davison AJ.
+\newblock A Robot Web for Distributed Many-Device Localisation.
+\newblock CoRR. 2022;abs/2202.03314.
+\newblock Available from: \url{https://arxiv.org/abs/2202.03314}.
+
+\bibitem{MultiVsSingleRobotSystems}
+Roldán-Gómez JJ, Barrientos A.
+\newblock Special Issue on Multi-Robot Systems: Challenges, Trends, and
+  Applications.
+\newblock Applied Sciences. 2021;11(24).
+\newblock Available from: \url{https://www.mdpi.com/2076-3417/11/24/11861}.
+
+\bibitem{MultiRobotCoordinationSurvey}
+Yan Z, Jouandeau N, Ali A.
+\newblock A Survey and Analysis of Multi-Robot Coordination.
+\newblock International Journal of Advanced Robotic Systems. 2013 12;10:1.
+
+\end{thebibliography}
