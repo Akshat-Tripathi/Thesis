@@ -1,27 +1,26 @@
 \chapter{Background}
 
-This chapter will provide the theoretical background for this thesis. First we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve. Next we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
+This chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
 
 \section{Multi-Robot Systems} % QUESTION: Can I call this Distributed Robotics??
-The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competetively or collaboratively, coordinate statically or dynamically, communicate  explicitly or implictly, consist of homogeneous or heterogenous robots and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}.
+The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment \cite{MRS-Implicit-Explicit-Comms}. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible, and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competitively or collaboratively, coordinate statically or dynamically, communicate explicitly or implicitly, consist of homogeneous or heterogeneous robots, and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}. % QUESTION: Can I cite this paper at all / am I citing it too much?
+% QUESTION: Is the evolve sentence all right or not?
 
 \subsection{Competitive vs Collaborative Behavior}
-Multiple robots which share a common goal are considered to be behaving collaboratively, whereas if each robot aimed to complete its own goal at the expense of all others, it would be said to be behaving competetively \cite{MultiRobotCoordinationSurvey}. Examples of collaboration range from teams of robots constructing a habitat \cite{LunarHabitatConstruction} to 
+Multiple robots which share a common goal are considered to be behaving collaboratively, whereas if each robot aimed to complete its own goal at the expense of all others, it would be said to be behaving competitively \cite{MultiRobotCoordinationSurvey}. Examples of collaboration range from teams of robots constructing a lunar habitat \cite{LunarHabitatConstructionExample} to exploring unknown environments \cite{MultiRobotExplorationExample}.
 
 \subsection{Static vs Dynamic Coordination}
-\dots
+If a multi-robot system operates using a set of predetermined rules, then it can be said to be coordinating itself statically \cite{MultiRobotCoordinationSurvey}. A possible set of rules would be that each robot must maintain a certain distance between it and all others \cite{MultiRobotCoordinationSurvey}. Dynamically coordinated multi-robot systems would instead make decisions whilst performing the task and may communicate to do so \cite{MultiRobotCoordinationSurvey}.
 
 \subsection{Explicit vs Implicit Communication}
-\dots
+Most multi-robot systems communicate explicitly by sending messages to each other via a hardware communication interface, for example, a wifi module \cite{MultiRobotCoordinationSurvey}. However, there is still a sizeable minority of approaches that send messages through their environment (implicit communication) and rely on others to sense these messages to receive them. An example of implicit communication is found in \cite{FootballRobots}, where the authors use it to allow a team of robots to play a game of football for the RoboCup Simulation League \cite{RoboCup}.
 
-\subsection{Homogenous vs Heterogenous Robots}
-\dots
+\subsection{Homogeneous vs Heterogeneous Robots}
+Multi-robot systems can either contain robots with identical hardware, which are known as homogeneous systems, or individual robots may have different hardware, making them heterogeneous systems. Heterogeneous systems allow a greater degree of specialisation within a multi-robot system but also add additional decision-making complexity.
 
 \subsection{Centralised vs Decentralised Decision Making}
-\dots
-
-What's left (not just security)
-
+A multi-robot system is said to have centralised decision-making if all robots communicate with a central agent, which may or may not be a robot itself, to receive instructions. Centralised schemes perform better with smaller groups of robots and in static environments, they also introduce a single point of failure in the central agent \cite{MultiRobotCoordinationSurvey}. Decentralised schemes, however, avoid vesting authority into a central agent and instead treat each agent as an equal part of the system, which allows them to avoid the problems associated with centralised schemes. However, decentralised schemes lose the guarantee that they will converge to an optimal solution, as decisions are made with incomplete information. % Should I add more citations here?
+In addition to centralised and decentralised schemes, multi-robot systems may also be organised in a hierarchical manner, where some robots would be chosen as local leaders, but no global leader would exist.
 
 \section{Robot Web}
 

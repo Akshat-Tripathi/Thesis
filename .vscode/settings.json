@@ -17,4 +17,14 @@
             ]
         }
     ],
+    "grammarly.selectors": [
+        {
+            "language": "latex",
+            "scheme": "file"
+        }
+    ],
+    "grammarly.config.documentDialect": "british",
+    "grammarly.config.documentDomain": "academic",
+    "grammarly.config.suggestions.InformalPronounsAcademic": true,
+    "grammarly.config.suggestions.UnnecessaryEllipses": true
 }
