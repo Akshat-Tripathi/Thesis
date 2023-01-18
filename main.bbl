@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{Robotweb}
 Murai R, Ortiz J, Saeedi S, Kelly PHJ, Davison AJ.
@@ -54,5 +54,22 @@ Kitano H, Asada M, Kuniyoshi Y, Noda I, Osawa E.
   Agents. AGENTS '97. New York, NY, USA: Association for Computing Machinery;
   1997. p. 340–347.
 \newblock Available from: \url{https://doi.org/10.1145/267658.267738}.
+
+\bibitem{FactorGraphDrawingFormat}
+Kschischang FR, Frey BJ, Loeliger HA.
+\newblock Factor graphs and the sum-product algorithm.
+\newblock IEEE Transactions on Information Theory. 2001;47(2):498-519.
+
+\bibitem{GaussianBP}
+Ortiz J, Evans T, Davison AJ.
+\newblock A visual introduction to Gaussian Belief Propagation.
+\newblock CoRR. 2021;abs/2107.02308.
+\newblock Available from: \url{https://arxiv.org/abs/2107.02308}.
+
+\bibitem{GaussianBPOriginal}
+Weiss Y, Freeman W.
+\newblock Correctness of belief propagation in Gaussian graphical models of
+  arbitrary topology.
+\newblock Advances in neural information processing systems. 1999;12.
 
 \end{thebibliography}

@@ -23,10 +23,103 @@ A multi-robot system is said to have centralised decision-making if all robots c
 In addition to centralised and decentralised schemes, multi-robot systems may also be organised in a hierarchical manner, where some robots would be chosen as local leaders, but no global leader would exist.
 
 \section{Robot Web}
+This thesis seeks to build upon the work done in ``A Robot Web for Distributed Many-Device Localisation'' \cite{Robotweb}, which describes a method for \textit{heterogeneous} robots in a \textit{decentralised} multi-robot system to \textit{collaborate} via \textit{explicit communication} to localise \textit{dynamically}.
 
-\subsection{Factor Graphs}
+Robots in the \textbf{Robot Web} move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the \textbf{Robot Web} by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
+
+\subsection{Factor Graphs} % QUESTION: Do I need citations here? Because I made the example up afaik but could be remembering an old tutorial, I'm not sure
+A factor graph is a graphical representation of the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
+
+\begin{equation}
+p(X) = \underset{i}{\prod} f_i(X_i)
+\end{equation}
+
+The nodes of a factor graph can either represent variables ($X_i$) or factors ($f_i$). There are several different ways to draw factor graphs, but we will use the one defined in \cite{FactorGraphDrawingFormat}, where factors are drawn as squares and variables are drawn as circles. A factor graph is a \textit{bipartite} graph which means that factor nodes can only connect to variable nodes and vice-versa.
+
+\begin{figure}[!h]
+    \centering
+    \input{diagrams/factor_graph_1.tikz}
+
+    \caption[short]{An example of a factor graph}
+\end{figure}
+
+The above factor graph represents the following factorisation:
+
+\begin{equation}
+    p(X_1, X_2, X_3) = f_A(X_1)f_B(X_2)f_C(X_3)f_D(X_1, X_2)f_E(X_2, X_3)f_F(X_3)
+    \label{eqn:factors}
+\end{equation}
+
+Suppose we wanted to find the probability that $X_1 = z$ for some value of $z$ using the above factor graph. Then we would need to find:
+
+\begin{equation}
+    p(X_1 = z, X_2, X_3) = \underset{i=X_2}{\sum} \underset{j=X_3}{\sum} p(X_1 = z, X_2 = i, X_3 =j)
+    \label{eqn:bp_derivation_1}
+\end{equation}
+
+And by \ref{eqn:factors} we get:
+
+\begin{equation}
+    p(X_1 = z, X_2, X_3) = \underset{i=X_2}{\sum} \underset{j=X_3}{\sum} f_A(z)f_B(i)f_C(j)f_D(z, i)f_E(z, j)f_F(j)
+\end{equation}
+
+
+which can be rearranged to form:
+
+\begin{equation}
+    p(X_1 = z, X_2, X_3) = f_A(z) \underset{i=X_2}{\sum} \left(f_D(z, i)f_B(i) \left(\underset{j=X_3}{\sum} f_E(z, j)f_C(j)f_F(j) \right)\right)
+    \label{eqn:x1}
+\end{equation}
+
+Similarly, if we wanted to find the probability that $X_2 = z$ for some z we would need to find:
+
+\begin{equation}
+    p(X_1, X_2 = z, X_3) = f_b(z) \left(\underset{i=X_1}{\sum} f_D(i, z) f_A(i)\right) \left(\underset{j=X_3}{\sum} f_E(z, j) f_C(j) f_F(j)\right)
+    \label{eqn:x2}
+\end{equation}
+
+Noticing how the sum over $X_3$ in both \ref{eqn:x1} and \ref{eqn:x2} is the same, we may want to ``cache'' the result when dealing with large factor graphs, to improve performance. To do this we can associate calculations with nodes in the factor graph. We call these associations ``messages''.
+
+The general form of a message from variable $i$ to factor $j$ is the product of the messages from all other neighbouring factors \cite{GaussianBP}. Put formally:
+
+\begin{equation}
+    m_{x_i \rightarrow f_j} = \underset{s \in N(i) \backslash j }{\prod} m_{f_s \rightarrow x_i}
+    \label{eqn:v_f}
+\end{equation}
+
+The general form of a message from factor $j$ to variable $i$ is the product of the messages from all other neighbouring variables and the factor applied to all other variables except $i$ \cite{GaussianBP}. Put formally:
+
+\begin{equation}
+    m_{f_j \rightarrow x_i} = \left(\underset{X_j \backslash x_i}{\sum} f_j(X_j)\right) \left(\underset{k \in N(j) \backslash i}{\prod} m_{x_k \rightarrow f_j}\right)
+    \label{eqn:f_v}
+\end{equation}
+
+Finally, the marginal value of a variable is simply the product of all incoming messages to it \cite{GaussianBP}.
+
+\begin{equation}
+    p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
+    \label{eqn:bp_belief}
+\end{equation}
+
+\subsection{Belief Propagation}
+The above equations are used by the Belief Propagation algorithm, an iterative algorithm used to calculate the marginal value for each variable in a factor graph \cite{GaussianBP}. Each iteration of Belief Propagation has 3 phases:
+
+\begin{enumerate}
+    \item Variables send messages to each of their neighbouring factors \ref{eqn:v_f}.
+    \item Factors send messages to each of their neighbouring variables \ref{eqn:f_v}.
+    \item Each variable updates its ``belief'' (its estimated marginal value) \ref{eqn:bp_belief}.
+\end{enumerate}
+
+The original Belief Propagation algorithm was designed to be used in tree-like graphs, i.e. graphs without loops \cite{GaussianBP}. However, empirical evidence has shown that ``Loopy-BP'' can still converge to provide useful results in a variety of problem domains \cite{GaussianBP}. % TODO replace citations with better ones 
+
 \subsection{Gaussian Belief Propagation}
+Gaussian Belief Propagation is a special case of the Belief Propagation algorithm where the underlying distribution of each variable follows a Gaussian distribution \cite{GaussianBPOriginal}.
+
+% needs a linear relationship between the factors and the variables
 \subsection{Lie Theory}
+% Lie theory is a thing that can be used to represent positions and stuff
+% Fun fact you can use it to apply Gaussians to movement, which is what we do in robot web
+
 \subsection{Putting it all together}
 
 \section{Security Issues}
