@@ -27,7 +27,7 @@ This thesis seeks to build upon the work done in ``A Robot Web for Distributed M
 
 Robots in the \textbf{Robot Web} move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the \textbf{Robot Web} by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
 
-This section will introduce the reader to the core concepts used in the \textbf{Robot Web} and assemble them to provide the reader with an understanding of how the Robot Web functions.
+This section will introduce the reader to the core concepts used in the \textbf{Robot Web} and assemble them to provide the reader with an understanding of how the \textbf{Robot Web} functions and some of its limitations.
 
 \subsection{Factor Graphs} % QUESTION: Do I need citations here? Because I made the example up afaik but could be remembering an old tutorial, I'm not sure
 A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
@@ -42,7 +42,7 @@ The nodes of a factor graph can either represent variables ($X_i$) or factors ($
     \centering
     \input{diagrams/factor_graph_1.tikz}
 
-    \caption[short]{An example of a factor graph}
+    \caption[Example factor graph]{An example of a factor graph}
 \end{figure}
 
 The above factor graph represents the following factorisation:
@@ -128,7 +128,18 @@ The canonical form uses an \textit{information vector} ($\eta$) and a \textit{pr
 where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
 
 \subsection{Lie Theory}
-Lie theory is W
+Lie theory is a subset of group theory focussed on studying \textit{Lie groups}. Lie theory is a vast and abstract field, from which we only need to borrow a few concepts. The first is that positions and rotations can be represented as Lie groups, for example, the group $SO2$ represents a rotation in 2D space and the $SE3$ group represents a rigid motion in 3D space. The second core concept is the \textit{tangent space} which allows small deviations to be applied to the Lie group uniformly regardless of the value it operates on. This concludes our whirlwind tour of Lie theory, we invite the reader to read \cite{MicroLieTheory} for a more detailed tutorial.
+
+% QUESTION: Do I need this at all?
+% A group is a set of elements $G$ combined with a composition operation $\circ$, such that the following properties hold:
+% \begin{enumerate}
+%     \item Composing 2 elements of G results in another element of G
+%     \item There exists an identity element $\epsilon$ so that composing any element with $\epsilon$ or $\epsilon$ with any element results in the same element
+%     \item Composing an element with its inverse results in $\epsilon$
+%     \item Composition is associative
+% \end{enumerate}
+
+% A Lie group is a group combined with a smooth manifold
 
 \subsection{Putting it all together}
 % Robot web uses factor graphs, and lie theory. Each robot has a couple of variables for its internal pose estimate connected by factors. When a robot senses another near it, it will create a factor between it and the latest pose variable of the other robot.
