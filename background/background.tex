@@ -25,9 +25,9 @@ In addition to centralised and decentralised schemes, multi-robot systems may al
 \section{Robot Web}
 This thesis seeks to build upon the work done in ``A Robot Web for Distributed Many-Device Localisation'' \cite{Robotweb}, which describes a method for \textit{heterogeneous} robots in a \textit{decentralised} multi-robot system to \textit{collaborate} via \textit{explicit communication} to localise \textit{dynamically}.
 
-Robots in the \textbf{Robot Web} move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the \textbf{Robot Web} by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
+Robots in the Robot Web move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the Robot Web by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
 
-This section will introduce the reader to the core concepts used in the \textbf{Robot Web} and assemble them to provide the reader with an understanding of how the \textbf{Robot Web} functions and some of its limitations.
+This section will introduce the reader to the core concepts used in the Robot Web and assemble them to provide the reader with an understanding of how the Robot Web functions and some of its limitations.
 
 \subsection{Factor Graphs} % QUESTION: Do I need citations here? Because I made the example up afaik but could be remembering an old tutorial, I'm not sure
 A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
@@ -142,10 +142,39 @@ Lie theory is a subset of group theory focussed on studying \textit{Lie groups}.
 % A Lie group is a group combined with a smooth manifold
 
 \subsection{Putting it all together}
-% Robot web uses factor graphs, and lie theory. Each robot has a couple of variables for its internal pose estimate connected by factors. When a robot senses another near it, it will create a factor between it and the latest pose variable of the other robot.
+Now that we have covered all of the prerequisites to understanding how the Robot Web operates, we shall now demonstrate how they can be assembled into the Robot Web.
+
+Every robot in the Robot Web needs to estimate its current location at all times, this is called localisation. One simple localisation method is to use odometry, which uses internal sensors to measure its displacement from its previous location. Since no sensor is perfect, this introduces a small amount of noise, which can be accurately modelled using a Gaussian distribution. The Robot Web simulates odometry using a factor graph, each known position of the robot maps to a pose variable, and the variables of each pair of successive positions are connected by an odometry factor. On every timestep, the robot performs an iteration of Gaussian Belief Propagation to estimate its current position.
+
+The Robot Web further improves the accuracy of robots' locations by allowing robots to measure each other using external sensors. When a robot senses another, it creates a factor in its factor graph between its and the other's latest pose variables. When each robot wants to send a message to another, it publishes the message to its \textbf{Robot Web Page}, which the other robot will eventually read and use to update its location estimate.
+
+\begin{figure}[!h]
+    \centering
+    \input{diagrams/robot_web.tikz}
+
+    \caption[Robot Web factor graph]{An example of a factor graph in the Robot Web. Each robot's variables are connected by odometry factors. At times $t_1$ and $t_2$, both robots sense each other, and so exchange measurements by creating inter-robot-measurement factors on the graph.}
+\end{figure}
+
+The Robot Web represents the locations and sensor measurements of all robots using general Lie groups, rather than any specific group. This has the consequence that any type of sensor or robot can be a part of the Robot Web. For example, a drone moving in 3D space can interact with a car moving on a plane.
+
+\subsection{Evaluation}
+The Robot Web has been shown to improve the accuracy of robot localisation by \todo{insert percentage here} in a scenario where there are \dots. 
+
+Furthermore, the Robot Web has proven to be robust to a large number of faulty inter-robot sensors reporting random measurements, with this robustness lasting until 70-80\% of inter-robot sensors reported corrupted measurements.
+
+\todo{Add the graph from the original paper to back this up}
+
+Although the Robot Web is robust to many inter-robot sensors reporting random measurements, it is not robust to a bad actor which may instead report incorrect measurements designed to worsen the localisation of other members of the Robot Web. Possible attacks include but are not limited to:
+
+\begin{enumerate}
+    \item A bad actor creates inter-robot-measurement factors with extremely low standard deviations, to lull others into a false sense of security.
+    \item A bad actor sends these messages whilst assuming the identity of another robot.
+    \item A bad actor sends messages from many nonexistent robots, also known as a sybil attack (\autoref{section:sybil_attack})
+\end{enumerate}
 
 \section{Security Issues}
 \subsection{Byzantine fault tolerance}
 \subsection{Masquerade Attacks}
 \subsection{Sybil Attacks}
+\label{section:sybil_attack}
 
