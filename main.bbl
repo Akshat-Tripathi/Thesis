@@ -66,10 +66,4 @@ Ortiz J, Evans T, Davison AJ.
 \newblock CoRR. 2021;abs/2107.02308.
 \newblock Available from: \url{https://arxiv.org/abs/2107.02308}.
 
-\bibitem{GaussianBPOriginal}
-Weiss Y, Freeman W.
-\newblock Correctness of belief propagation in Gaussian graphical models of
-  arbitrary topology.
-\newblock Advances in neural information processing systems. 1999;12.
-
 \end{thebibliography}

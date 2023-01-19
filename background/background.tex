@@ -27,14 +27,16 @@ This thesis seeks to build upon the work done in ``A Robot Web for Distributed M
 
 Robots in the \textbf{Robot Web} move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the \textbf{Robot Web} by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
 
+This section will introduce the reader to the core concepts used in the \textbf{Robot Web} and assemble them to provide the reader with an understanding of how the Robot Web functions.
+
 \subsection{Factor Graphs} % QUESTION: Do I need citations here? Because I made the example up afaik but could be remembering an old tutorial, I'm not sure
-A factor graph is a graphical representation of the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
+A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
 
 \begin{equation}
 p(X) = \underset{i}{\prod} f_i(X_i)
 \end{equation}
 
-The nodes of a factor graph can either represent variables ($X_i$) or factors ($f_i$). There are several different ways to draw factor graphs, but we will use the one defined in \cite{FactorGraphDrawingFormat}, where factors are drawn as squares and variables are drawn as circles. A factor graph is a \textit{bipartite} graph which means that factor nodes can only connect to variable nodes and vice-versa.
+The nodes of a factor graph can either represent variables ($X_i$) or factors ($f_i$). There are several different ways to draw factor graphs, but we will use the one defined in \cite{FactorGraphDrawingFormat}, where factors are drawn as squares and variables are drawn as circles.
 
 \begin{figure}[!h]
     \centering
@@ -50,7 +52,7 @@ The above factor graph represents the following factorisation:
     \label{eqn:factors}
 \end{equation}
 
-Suppose we wanted to find the probability that $X_1 = z$ for some value of $z$ using the above factor graph. Then we would need to find:
+Assuming that each variable takes discrete values, suppose we wanted to find the probability that $X_1 = z$ for some value of $z$ using the above factor graph. Then we would need to find:
 
 \begin{equation}
     p(X_1 = z, X_2, X_3) = \underset{i=X_2}{\sum} \underset{j=X_3}{\sum} p(X_1 = z, X_2 = i, X_3 =j)
@@ -102,7 +104,7 @@ Finally, the marginal value of a variable is simply the product of all incoming 
 \end{equation}
 
 \subsection{Belief Propagation}
-The above equations are used by the Belief Propagation algorithm, an iterative algorithm used to calculate the marginal value for each variable in a factor graph \cite{GaussianBP}. Each iteration of Belief Propagation has 3 phases:
+The above equations are used by the Belief Propagation algorithm, an iterative message-passing algorithm used to calculate the marginal value for each variable in a factor graph \cite{GaussianBP}. Each iteration of Belief Propagation has 3 phases:
 
 \begin{enumerate}
     \item Variables send messages to each of their neighbouring factors \ref{eqn:v_f}.
@@ -113,14 +115,23 @@ The above equations are used by the Belief Propagation algorithm, an iterative a
 The original Belief Propagation algorithm was designed to be used in tree-like graphs, i.e. graphs without loops \cite{GaussianBP}. However, empirical evidence has shown that ``Loopy-BP'' can still converge to provide useful results in a variety of problem domains \cite{GaussianBP}. % TODO replace citations with better ones 
 
 \subsection{Gaussian Belief Propagation}
-Gaussian Belief Propagation is a special case of the Belief Propagation algorithm where the underlying distribution of each variable follows a Gaussian distribution \cite{GaussianBPOriginal}.
+A special case of the Belief Propagation algorithm is Gaussian Belief Propagation, which applies to problems where all variables follow a Gaussian distribution, and all factors are Gaussian functions of their inputs.
 
-% needs a linear relationship between the factors and the variables
+Under Gaussian Belief Propagation, each message can be interpreted as a Gaussian and so must contain sufficient information to produce one. A naive way of achieving this is to include a mean vector and a covariance matrix in each message. However, this approach is computationally expensive as it requires a full matrix multiplication whenever messages are multiplied which is an order $O(n^3)$ operation. An alternative approach is to use the \textit{canonical form} of the multivariate Gaussian distribution.
+
+The canonical form uses an \textit{information vector} ($\eta$) and a \textit{precision matrix} ($\Lambda$) defined as follows:
+
+\begin{align*}
+    \eta = \Sigma^{-1} \mu && \Lambda = \Sigma^{-1}
+\end{align*}
+
+where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
+
 \subsection{Lie Theory}
-% Lie theory is a thing that can be used to represent positions and stuff
-% Fun fact you can use it to apply Gaussians to movement, which is what we do in robot web
+Lie theory is W
 
 \subsection{Putting it all together}
+% Robot web uses factor graphs, and lie theory. Each robot has a couple of variables for its internal pose estimate connected by factors. When a robot senses another near it, it will create a factor between it and the latest pose variable of the other robot.
 
 \section{Security Issues}
 \subsection{Byzantine fault tolerance}
