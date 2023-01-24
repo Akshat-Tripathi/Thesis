@@ -1,16 +1,18 @@
 \chapter{Background}
 
-This chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
+\todo{Combine with related work}
 
-\section{Multi-Robot Systems} % QUESTION: Can I call this Distributed Robotics??
-The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment \cite{MRS-Implicit-Explicit-Comms}. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible, and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competitively or collaboratively, coordinate statically or dynamically, communicate explicitly or implicitly, consist of homogeneous or heterogeneous robots, and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}. % QUESTION: Can I cite this paper at all / am I citing it too much?
-% QUESTION: Is the evolve sentence all right or not?
+This chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve \unsure{Is this sentence fine?}. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
+
+\section{Multi-Robot Systems}
+\unsure{Can I call this Distributed Robotics?}
+The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment \cite{MRS-Implicit-Explicit-Comms}. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible, and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competitively or collaboratively, coordinate statically or dynamically, communicate explicitly or implicitly, consist of homogeneous or heterogeneous robots, and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}. \unsure{Am I citing this too much?}
 
 \subsection{Competitive vs Collaborative Behavior}
 Multiple robots which share a common goal are considered to be behaving collaboratively, whereas if each robot aimed to complete its own goal at the expense of all others, it would be said to be behaving competitively \cite{MultiRobotCoordinationSurvey}. Examples of collaboration range from teams of robots constructing a lunar habitat \cite{LunarHabitatConstructionExample} to exploring unknown environments \cite{MultiRobotExplorationExample}.
 
 \subsection{Static vs Dynamic Coordination}
-If a multi-robot system operates using a set of predetermined rules, then it can be said to be coordinating itself statically \cite{MultiRobotCoordinationSurvey}. A possible set of rules would be that each robot must maintain a certain distance between it and all others \cite{MultiRobotCoordinationSurvey}. Dynamically coordinated multi-robot systems would instead make decisions whilst performing the task and may communicate to do so \cite{MultiRobotCoordinationSurvey}.
+If a multi-robot system operates using a set of predetermined rules, then it can be said to be coordinating itself statically. A possible set of rules would be that each robot must maintain a certain distance between it and all others. Dynamically coordinated multi-robot systems would instead make decisions whilst performing the task and may communicate to do so \cite{MultiRobotCoordinationSurvey}.
 
 \subsection{Explicit vs Implicit Communication}
 Most multi-robot systems communicate explicitly by sending messages to each other via a hardware communication interface, for example, a wifi module \cite{MultiRobotCoordinationSurvey}. However, there is still a sizeable minority of approaches that send messages through their environment (implicit communication) and rely on others to sense these messages to receive them. An example of implicit communication is found in \cite{FootballRobots}, where the authors use it to allow a team of robots to play a game of football for the RoboCup Simulation League \cite{RoboCup}.
@@ -29,7 +31,8 @@ Robots in the Robot Web move along predefined paths, estimating their location v
 
 This section will introduce the reader to the core concepts used in the Robot Web and assemble them to provide the reader with an understanding of how the Robot Web functions and some of its limitations.
 
-\subsection{Factor Graphs} % QUESTION: Do I need citations here? Because I made the example up afaik but could be remembering an old tutorial, I'm not sure
+\subsection{Factor Graphs} 
+\unsure{Do I need a citation for this? I'm making up the example afaik}
 A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
 
 \begin{equation}
@@ -127,6 +130,8 @@ The canonical form uses an \textit{information vector} ($\eta$) and a \textit{pr
 
 where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
 
+\unsure{Should I add equations for gbp?}
+
 \subsection{Lie Theory}
 Lie theory is a subset of group theory focussed on studying \textit{Lie groups}. Lie theory is a vast and abstract field, from which we only need to borrow a few concepts. The first is that positions and rotations can be represented as Lie groups, for example, the group $SO2$ represents a rotation in 2D space and the $SE3$ group represents a rigid motion in 3D space. The second core concept is the \textit{tangent space} which allows small deviations to be applied to the Lie group uniformly regardless of the value it operates on. This concludes our whirlwind tour of Lie theory, we invite the reader to read \cite{MicroLieTheory} for a more detailed tutorial.
 
@@ -162,19 +167,45 @@ The Robot Web has been shown to improve the accuracy of robot localisation by \t
 
 Furthermore, the Robot Web has proven to be robust to a large number of faulty inter-robot sensors reporting random measurements, with this robustness lasting until 70-80\% of inter-robot sensors reported corrupted measurements.
 
-\todo{Add the graph from the original paper to back this up}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[page=1,width=.60\textwidth]{diagrams/sensor_noise.pdf}
+    \caption[RobotWeb's robustness to garbage measurements]{A graph showing that the RobotWeb is robust to up to 70-80\% of ``garbage'' measurements, where faulty sensors report random measurements. ATE refers to the average Absolute Trajectory Error measured over 50 runs in an environment with 50 robots and 10 beacons running for 100 timesteps. Taken from \cite[Figure~5]{Robotweb}}
+\end{figure}
 
 Although the Robot Web is robust to many inter-robot sensors reporting random measurements, it is not robust to a bad actor which may instead report incorrect measurements designed to worsen the localisation of other members of the Robot Web. Possible attacks include but are not limited to:
 
 \begin{enumerate}
-    \item A bad actor creates inter-robot-measurement factors with extremely low standard deviations, to lull others into a false sense of security.
-    \item A bad actor sends these messages whilst assuming the identity of another robot.
-    \item A bad actor sends messages from many nonexistent robots, also known as a sybil attack (\autoref{section:sybil_attack})
+    \item Sending messages with extremely low standard deviations, to lull others into a false sense of security.
+    \item Sending these messages whilst assuming the identity of another robot.
+    \item Sending these messages from many nonexistent robots, also known as a Sybil attack.
 \end{enumerate}
 
 \section{Security Issues}
-\subsection{Byzantine fault tolerance}
-\subsection{Masquerade Attacks}
-\subsection{Sybil Attacks}
-\label{section:sybil_attack}
+In this section, we will discuss several pertinent security issues that can arise in distributed systems. In particular, we will focus on attacks that are relevant to the security of robot networks.
 
+\subsection{Denial of Service} % Can go into more detail if necessary.
+A denial of service attack seeks to deny service. In a robotic network such as the Robot Web, this would prevent one or more robots from being able to access messages sent by their peers, and essentially cut them off from the Robot Web.
+
+The simplest way for an attacker to perform a DoS attack is to use a signal jammer, which can be constructed using off-the-shelf equipment \cite{SignalJamming}. This would continuously transmit signals within the range of frequencies allowed by the communication medium, both interfering with and irrecoverably corrupting any messages sent. More sophisticated attackers may craft harder-to-detect jammer attacks by mimicking legitimate messages or only transmitting when it senses communication \cite{SignalJamming}. In addition to these, there exist a whole host of jamming attacks (and defences) targetting specific communication protocols.
+
+Another form of DoS attack would be to disconnect specific robots from the network, using the network protocol's existing defences. For example, by convincing others that the target is a bad actor, triggering their defences to remove the target from the network. % Kinda like a de-authentication attack, but not really since we're not sending explicit de-authentication frames to do this.
+
+\subsection{Identity-Based Attacks}
+One class of attacks that could wreak havoc on robot networks are identity-based attacks; here, a nonzero number of bad actors, claim false identities, which may or may not correspond to other robots in the network. The former is known as a spoofing attack, whilst the latter constitutes a Sybil attack.
+
+\subsubsection{Spoofing Attacks}
+Devices exchange information by sending packets or frames of data. For our purposes, we can ignore the differences between packets and frames, and use the terms interchangeably. Packets are used to encapsulate the data sent with relevant metadata, such as the source and destination IDs of the packet. This metadata is the main target of spoofing attacks.
+
+In a spoofing attack, the attacker first finds the ID of a legitimate device, for example by first intercepting packets and then extracting the source ID from them. After this point, the attacker can send packets impersonating the target.
+
+\unsure{Add an example on how it applies to Robot Web?}
+
+\unsure{Should I add an example here?}
+
+\subsubsection{Sybil Attacks}
+The Sybil attack allows an attacker to gain undue influence in a peer-to-peer network, by flooding the network with nonexistent peers. 
+
+
+\subsection{Physical Attacks}
+Since we are dealing with networks of robots, physical moving objects, we must also consider that an attacker may use a range of physical attacks to compromise the integrity of the system. 
