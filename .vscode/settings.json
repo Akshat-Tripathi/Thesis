@@ -26,5 +26,7 @@
     "grammarly.config.documentDialect": "british",
     "grammarly.config.documentDomain": "academic",
     "grammarly.config.suggestions.InformalPronounsAcademic": true,
-    "grammarly.config.suggestions.UnnecessaryEllipses": true
+    "grammarly.config.suggestions.UnnecessaryEllipses": true,
+    "typewriterAutoScroll.enable": false,
+    "typewriterAutoScroll.offset": 50
 }

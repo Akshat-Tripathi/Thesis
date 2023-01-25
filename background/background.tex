@@ -1,8 +1,8 @@
-\chapter{Background}
+\chapter{State of the Art}
 
 \todo{Combine with related work}
 
-This chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve \unsure{Is this sentence fine?}. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
+The first half of this chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve\unsure{Is this sentence fine?}. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
 
 \section{Multi-Robot Systems}
 \unsure{Can I call this Distributed Robotics?}
@@ -182,30 +182,49 @@ Although the Robot Web is robust to many inter-robot sensors reporting random me
 \end{enumerate}
 
 \section{Security Issues}
-In this section, we will discuss several pertinent security issues that can arise in distributed systems. In particular, we will focus on attacks that are relevant to the security of robot networks.
+In this section, we will discuss several general security issues that can arise in robot networks. We will focus on issues that affect the accuracy of a robot's internal model of the world. This excludes attacks which may result in an attacker gaining control over a robot, yet includes attacks performed by hijacked robots.
 
 \subsection{Denial of Service} % Can go into more detail if necessary.
-A denial of service attack seeks to deny service. In a robotic network such as the Robot Web, this would prevent one or more robots from being able to access messages sent by their peers, and essentially cut them off from the Robot Web.
+A denial of service attack seeks to deny service. In a robot network such as the Robot Web, this would prevent one or more robots from being able to access messages sent by their peers, and essentially cut them off from the network.
 
 The simplest way for an attacker to perform a DoS attack is to use a signal jammer, which can be constructed using off-the-shelf equipment \cite{SignalJamming}. This would continuously transmit signals within the range of frequencies allowed by the communication medium, both interfering with and irrecoverably corrupting any messages sent. More sophisticated attackers may craft harder-to-detect jammer attacks by mimicking legitimate messages or only transmitting when it senses communication \cite{SignalJamming}. In addition to these, there exist a whole host of jamming attacks (and defences) targetting specific communication protocols.
 
-Another form of DoS attack would be to disconnect specific robots from the network, using the network protocol's existing defences. For example, by convincing others that the target is a bad actor, triggering their defences to remove the target from the network. % Kinda like a de-authentication attack, but not really since we're not sending explicit de-authentication frames to do this.
+Another form of a DoS attack would be to disconnect specific robots from the network, using the network protocol's existing defences. For example, by convincing others that the target is a bad actor, triggering their defences to remove the target from the network. % Kinda like a de-authentication attack, but not really since we're not sending explicit de-authentication frames to do this.
 
 \subsection{Identity-Based Attacks}
-One class of attacks that could wreak havoc on robot networks are identity-based attacks; here, a nonzero number of bad actors, claim false identities, which may or may not correspond to other robots in the network. The former is known as a spoofing attack, whilst the latter constitutes a Sybil attack.
+% One class of attacks that could wreak havoc on robot networks are identity-based attacks; here a nonzero number of bad actors, claim false identities, which may or may not correspond to other robots in the network. The former is known as a spoofing attack, whilst the latter constitutes a Sybil attack.
+
+Identity-based attacks can wreak havoc on robot networks. Using the model defined by Douceur \cite{SybilAttack}, we can describe a robot network as one consisting of $E$ entities (robots) each claiming at least one identity $i$ from the set of all identities $I$. When the network is under an identity-based attack, at least one of the following two properties will hold: % TODO maybe add the faulty/correct distinction
+\begin{enumerate}
+    \item Two entities, $e1, e2$ will present the same identity $i$
+    \item The number of identities in $I$ will exceed the number of entities in $E$.
+\end{enumerate}
+If only the former holds, then the network is under a spoofing attack, whereas if only the latter holds, then the network is under a Sybil attack. Note: there is no guarantee that only one of these will hold at a time, and so we must be prepared to defend against both simultaneously.
 
 \subsubsection{Spoofing Attacks}
 Devices exchange information by sending packets or frames of data. For our purposes, we can ignore the differences between packets and frames, and use the terms interchangeably. Packets are used to encapsulate the data sent with relevant metadata, such as the source and destination IDs of the packet. This metadata is the main target of spoofing attacks.
 
-In a spoofing attack, the attacker first finds the ID of a legitimate device, for example by first intercepting packets and then extracting the source ID from them. After this point, the attacker can send packets impersonating the target.
+In a spoofing attack, the attacker first finds the identity of a legitimate device, for example by first intercepting packets and then extracting the source ID from them. After this point, the attacker sends misleading packets impersonating the target. 
 
-\unsure{Add an example on how it applies to Robot Web?}
-
-\unsure{Should I add an example here?}
+This can have several benefits for the attacker. Firstly, they could covertly inject misinformation into the network by impersonating an already trusted robot. Secondly, they could trigger defences in the network to flag target for misinformation and remove it.
 
 \subsubsection{Sybil Attacks}
-The Sybil attack allows an attacker to gain undue influence in a peer-to-peer network, by flooding the network with nonexistent peers. Douceur \cite{SybilAttack} models such a network as \dots.
+In a Sybil attack, the attacker will create many fake identities to gain undue influence on the network. In a robot network, this would allow them to indirectly influence the actions of victim robots. For example, one could lead two self-driving cars to conclude that their best course of action is to crash, by claiming many false identities would be hit if they were not to.
 
+Douceur \cite{SybilAttack} proves Sybil attacks are always possible in distributed systems where there is no central arbiter of truth. They present and prove four lemmas about identities in large-scale distributed systems. The first two lemmas are concerned with entities which directly validate the identities presented to them, whilst the second two lemmas involve entities which rely upon other, potentially untrustworthy, identities for validation. The lemmas are as follows:
+
+ %TODO lemma-ise
+
+\begin{enumerate}
+    \item If an attacker has $\rho$ times as many resources as the weakest entity, then they can successfully present up to $\lfloor\rho\rfloor$ distinct identities.
+    \item If an entity doesn't validate all identities simultaneously, then an attacker can present an unbounded number of distinct identities.
+    \item If an entity trusts $q$ other identities to validate an identity, then at least $f$ attackers are required to perform the attack, where $f >= q$ or the resources commanded by the attackers exceed $q + f$ times the weakest entity's resources.
+    \item If all $c$ non-attackers don't coordinate when they validate identities, and an entity again trusts $q$ other identities for validation, then even a weak attacker can present $\lfloor\frac{c}{q}\rfloor$ identities.
+\end{enumerate}
+
+We plan to solve this problem by treating the physical world as a central arbiter of truth, albeit with some degree of error, due to imperfections in sensors.
 
 \subsection{Physical Attacks}
-Since we are dealing with networks of robots, physical moving objects, we must also consider that an attacker may use a range of physical attacks to compromise the integrity of the system. 
+Finally, since this thesis focuses on the security of robot networks, we will discuss the possibility of physical attacks on the system, and our limited ability to protect against them. We define a physical attack as any attempt to compromise the ability of a robot to perform its task. This includes colliding with the robot but also includes more subtle tactics, such as obscuring the robot's sensors. Physical attacks could also be used similarly to Sybil attacks, where several attackers would surround a robot and feed it misinformation. 
+
+In this thesis, we will not attempt to protect against attacks where several robots would physically collide, since this would require heavy hardware modifications to existing robots. Instead, we will focus on occlusion attacks and physical Sybil attacks, at the very least allowing a robot to detect them.

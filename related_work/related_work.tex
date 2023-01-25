@@ -1,6 +1,8 @@
-\chapter{Related Work}
+% \chapter{Related Work}
+\noindent\makebox[\linewidth]{\rule{\textwidth}{1pt}}
 
-Several different techniques have been explored in preventing the types of identity-based attacks discussed in the previous chapter. In this chapter, we will examine and evaluate these. We broadly group these approaches into 2 main groups; the first uses the physical characteristics of signal propagation to bind an identity to an entity, whilst the second exploits the fact that no entity can perform an unlimited amount of computation.
+
+Several different techniques have been explored in preventing the types of identity-based attacks discussed in this chapter. In the \nth{2} half of this chapter, we will examine and evaluate these. We broadly group these approaches into 2 main groups; the first uses the physical characteristics of signal propagation to bind an identity to an entity, whilst the second exploits the fact that no entity can perform an unlimited amount of computation.
 
 \section{Wifi Fingerprinting}
 % In this section, we will review two Wifi fingerprinting-based approaches to binding identities to entities. 
@@ -9,7 +11,7 @@ There are many ways for devices to communicate wirelessly, many of which use rad
 
 When a device sends a packet using Wifi, it transmits a radio signal for a given number of nanoseconds from its antenna. This signal will attenuate as it travels further and further through space. After a certain distance, also known as the communicating range of the antenna, the signal will fade into background noise. The signal leaves the antenna in all directions simultaneously, as a radio wave. Eventually, a small part of this wave will reach the receiver's antenna and the packet will be decoded out of it.
 
-Other parts of the wave will either diffract around corners, reflect off some large objects or scatter off many small objects \cite{SignalProp}. Consequently, this means that a receiver may receive a packet from several different directions simultaneously, that is that it could encounter different parts of the same wave from different directions at the same time. This phenomenon is known as multipath scattering. %TODO Add diagram? 
+Other parts of the wave will either diffract around corners, reflect off some large objects, or scatter off many small objects \cite{SignalProp}. Consequently, this means that a receiver may receive a packet from several different directions simultaneously, that is that it could encounter different parts of the same wave from different directions at the same time. This phenomenon is known as multipath scattering. %TODO Add diagram? 
 
 Multipath scattering has two interesting properties; it is practically impossible to predict, ahead of time, the distribution of signals around a receiver and it is unlikely that two receivers will observe the same signal propagation with sufficient multipath scattering \citationneeded. These properties allow for devices to ``fingerprint'' every packet they receive, such that two different transmitters cannot have the same fingerprint unless they are simultaneously located at the same place. 
 
@@ -29,30 +31,50 @@ The authors evaluate their algorithm in the context of the following problem sta
 The authors perform four experiments to validate their hypotheses:
 \begin{enumerate}
     \item They compare the performance of the ``virtual spoofer sensor'' in both an indoor and simulated outdoor environment, as expected, finding that multipath scattering is more effective in indoor settings, but also that adding a single reflector to the environment vastly improves performance.
-    \item They compare the effect of a stationary, moving and power-scaling Sybil attacker on the ability of the ``virtual spoofer sensor'' to correctly classify agents, resulting in no false negatives, but many false positives.
+    \item They compare the effect of a stationary, moving, and power-scaling Sybil attacker on the ability of the ``virtual spoofer sensor'' to correctly classify agents, resulting in no false negatives, but many false positives.
     \item They evaluate their system on the multi-agent coverage problem \cite{MultiAgentCoverage}, finding that it can provide near-optimal results even when there are 3$\times$ more spoofed agents.
     \item They apply their system to a drone delivery problem, where the ``server'' needs to visit each real ``client'' to deliver a package and again find that their system provides near-optimal results when there are 3$\times$ more spoofed agents.
 \end{enumerate}
 
 \unsure{I have suspicions about how they did the last 2 experiments, especially since the phantoms are nowhere near the actual attacker.}
 
-Although the authors extensively test their system, they make some problematic assumptions which may be exploited by attackers. Firstly they do not account for Sybil attacks using multiple antennae, which could transmit the same message at the same time, but with variable power levels. Each antenna would create a different multipath scatter, and if the relative powers between them were varied, then they could theoretically construct many false fingerprints. Similarly, they do not account for collaboration between different attackers, which would again be able to create many false fingerprints. Thirdly, attackers could physically augment their antennae to partially control their multipath scattering, for example, one could create moveable barriers to prevent some scattering from occurring. Finally, the authors assume that all background noise will follow a Gaussian distribution, however, this assumption falls flat in an adversarial scenario as other attackers could emit non-Gaussian noise to decrease the similarity of fingerprints.
-\todo{Add diagram for 3, and maybe make this an enumeration}
-
-
 \subsection{Lightweight Sybil-Resilient Multi-Robot Networks by Multipath Manipulation}
-Huang et al.
+Huang et al. \cite{MultiPathManipulation} take a different approach to Gil et al. \cite{GuaranteeingSpoofResilience}; instead of relying upon the environment to provide multipath scattering, they actively cause it by using backscatter tags. This offers two main advantages over Gil et al.: \begin{enumerate*}
+    \item the environment has a lesser effect on the performance of the Sybil attack detector and
+    \item the robots' antennae no longer need to move when capturing a fingerprint.
+\end{enumerate*}
+Using the captured signal information, the robots would again compute a fingerprint per transmission, normalise it to mitigate the effects of any power scaling attacks, and finally compare the normalised fingerprint to those of all others, treating any identities with sufficiently similar fingerprints as Sybil attackers.
 
-Explain how they generate a fingerprint and how they use it to combat sybil and masquerade attacks
+An important thing to know about backscatter tags is that they don't need any batteries or anything, they create scattering just by passively absorbing and reflecting any signals that they come across. This is good because it is much simpler to use than SAR, since you don't need to move or use any complex linear algebra to get reconstruct an antenna array. For any given signal, the backscattering will be highly correlated with the positions of the tags, and tx/rx antennae, meaning that all signals from 1 entity will have a similar scattering.
 
-Present their findings
+When a robot receives a signal, it receives a raw signal. This is first smoothed out with a moving average filter, to create the backscattered signal. Then it decodes a message out of the backscattered signal, and uses it, with signal processing techniques to figure out which tag scattered what and when. Then the robot does more filtering to remove any backscattering from the environment, the resulting signal will be used to construct a signature for the transmission.
+
+The authors then evaluate their implementation in both an indoor office environment and an outdoor rooftop environment. They find that their method is virtually indifferent to the surrounding environment, as they measure an average TP rate of \dots and FP rate of \dots.
 
 \subsection{Conclusions}
 
-Talk about what's wrong with the papers/what can be done to break the attack
+Although both sets of authors extensively test their system, they make some problematic assumptions, which may be exploited by attackers. 
+
+\begin{enumerate}
+    \item They do not account for Sybil attacks using multiple antennae, which could transmit the same message at the same time, but with variable power levels. Each antenna would create a different multipath scatter, and if the relative powers between them were varied, then they could theoretically construct many false fingerprints.
+    \item They also do not account for collaboration between different attackers, which would function similarly to the previous vulnerability, where geographically distributed attackers could simultaneously send the same message, with different power scales, creating another set of false fingerprints. This method could produce a larger range of false identities but may encounter synchronisation problems between attackers.
+    \item Attackers could leverage methods similar to Huang et al. and physically augment their antennae to manipulate their multipath scattering, for example, one could create moveable barriers to prevent some scattering from occurring.
+    \item Both sets of authors assume that any noise from the environment will not be malicious; Gil et al. assume that it will follow a Gaussian distribution, whilst Huang et al. assume that standard signal processing techniques would be sufficient to filter it out. Both of these assumptions fail to account for the possibility that coordinated attackers emit noise above background levels, but not so high that it would seriously interfere with transmissions. This would disrupt every transmission's signature and would prevent any pair of transmissions from looking alike.
+\end{enumerate}
+
+
+\todo{Add diagram for 3}
 
 \section{Proof of Work}
-Explain how proof of work usually works (blockchain context)
+Proof of Work is underpinned by the insight that no entity in a network has the ability to perform unlimited computation.
+
+This leads us to think that if generating an ID is expensive enough, then people won't be able to do it. Proof of work exploits this idea by requiring each entity to solve a computationally expensive puzzle to claim an ID, which because of the assumption above, means that making up false IDs can be done, but would incur significant costs to whomstever did them. The puzzles must be hard to solve but easy to check \dots NP \citationneeded. 
+
+The problem with this strat is that it's super duper wasteful since the puzzle solved is never used for anything except verification. Furthermore, robots don't tend to have super powerful systems onboard, which means that they don't really have the resources to spare to solve nonsense problems. This strat also means that good bots have to pay the price for bad bots, which ain't great since bad bots are unlikely to actually be there, in fact we can basically assume that in most cases, the robot net won't be under attack, that an attack would be a Black Swan event.
+
+In this section we'll discuss several solutions to this problem.
+
+
 
 \subsection{Paper series 1 - Gupta et al.}
 Explain what problems w PoW they find
