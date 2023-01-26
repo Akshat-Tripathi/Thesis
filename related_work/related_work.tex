@@ -13,16 +13,16 @@ When a device sends a packet using Wifi, it transmits a radio signal for a given
 
 Other parts of the wave will either diffract around corners, reflect off some large objects, or scatter off many small objects \cite{SignalProp}. Consequently, this means that a receiver may receive a packet from several different directions simultaneously, that is that it could encounter different parts of the same wave from different directions at the same time. This phenomenon is known as multipath scattering. %TODO Add diagram? 
 
-Multipath scattering has two interesting properties; it is practically impossible to predict, ahead of time, the distribution of signals around a receiver and it is unlikely that two receivers will observe the same signal propagation with sufficient multipath scattering \citationneeded. These properties allow for devices to ``fingerprint'' every packet they receive, such that two different transmitters cannot have the same fingerprint unless they are simultaneously located at the same place. 
+Multipath scattering has two interesting properties; it is practically impossible to predict, ahead of time, the distribution of signals around a receiver and it is unlikely that two receivers will observe the same signal propagation with sufficient multipath scattering\citationneeded. These properties allow for devices to ``fingerprint'' every packet they receive, such that two different transmitters cannot have the same fingerprint unless they are simultaneously located at the same place. 
 
-However, implementing multipath scattering-based algorithms have some technical constraints; namely that the receiving antenna must be able to measure the signal in each direction, and that a sufficient amount of multipath scattering must occur. Usually, these algorithms struggle in outdoor environments, where the environment may not provide objects for multipath scattering to occur \citationneeded.
+However, implementing multipath scattering-based algorithms have some technical constraints; namely that the receiving antenna must be able to measure the signal in each direction, and that a sufficient amount of multipath scattering must occur. Usually, these algorithms struggle in outdoor environments, where the environment may not provide objects for multipath scattering to occur\citationneeded.
 
 The following papers discuss methods to circumvent these constraints, focussing on securing robot networks from spoofing and Sybil attacks. 
 
 \subsection{Guaranteeing spoof-resilient multi-robot networks}
 Gil et al, \cite{GuaranteeingSpoofResilience} provides an interesting approach to some of the aforementioned problems, most notably the problem of requiring expensive hardware to allow the receiving antenna to measure the signal in each direction. They do this by inventing an algorithm that allows them to build a ``virtual spoofer sensor'' only using commercially available wifi hardware, which creates a ``spatial fingerprint'' from each transmission in the network. They use the output from this sensor to calculate a confidence metric $\alpha$ indicating their algorithm's confidence that a robot's identity is its entity. Finally, they characterise the theoretical performance of the ``virtual spoofer sensor'' and provide empirical evidence to support their claims by undertaking several experiments.
 
-The authors build the ``virtual spoofer sensor'' by building upon \textit{Synthetic Aperture Radar} (SAR) techniques, which allow a single antenna to be used to simulate an antenna array. SAR involves moving the antenna to different locations and taking snapshots of the signals received. These snapshots are then combined using signal-processing techniques to emulate a multi-antenna array \cite{BAD_SAR}. \unsure{Diagram needed?}
+The authors build the ``virtual spoofer sensor'' by building upon \textit{Synthetic Aperture Radar} (SAR) techniques, which allow a single antenna to be used to simulate an antenna array. SAR involves moving the antenna to different locations and taking snapshots of the signals received. These snapshots are then combined using signal-processing techniques to emulate a multi-antenna array \cite{BAD_SAR}.\unsure{Diagram needed?}
 %TODO: This isn't a great citation, go to the original paper
 The ``spatial fingerprint'' calculated, is then compared to the fingerprints of other clients, and clients with identical fingerprints are assumed to be Sybil attackers.
 
@@ -43,13 +43,15 @@ Huang et al. \cite{MultiPathManipulation} take a different approach to Gil et al
     \item the environment has a lesser effect on the performance of the Sybil attack detector and
     \item the robots' antennae no longer need to move when capturing a fingerprint.
 \end{enumerate*}
-Using the captured signal information, the robots would again compute a fingerprint per transmission, normalise it to mitigate the effects of any power scaling attacks, and finally compare the normalised fingerprint to those of all others, treating any identities with sufficiently similar fingerprints as Sybil attackers.
+Using the captured signal information, the robots again compute a fingerprint per transmission, normalise it to mitigate the effects of any power scaling attacks, and finally compare the normalised fingerprint to those of all others, treating any identities with sufficiently similar fingerprints as Sybil attackers.
 
-An important thing to know about backscatter tags is that they don't need any batteries or anything, they create scattering just by passively absorbing and reflecting any signals that they come across. This is good because it is much simpler to use than SAR, since you don't need to move or use any complex linear algebra to get reconstruct an antenna array. For any given signal, the backscattering will be highly correlated with the positions of the tags, and tx/rx antennae, meaning that all signals from 1 entity will have a similar scattering.
+Backscatter tags scatter signals that they encounter by rapidly absorbing and reflecting them. Backscatter tags also simplify the fingerprinting process, since robots are no longer required to perform small movements for SAR, nor must the software engage in expensive linear algebra to construct a multi-antenna array. 
 
-When a robot receives a signal, it receives a raw signal. This is first smoothed out with a moving average filter, to create the backscattered signal. Then it decodes a message out of the backscattered signal, and uses it, with signal processing techniques to figure out which tag scattered what and when. Then the robot does more filtering to remove any backscattering from the environment, the resulting signal will be used to construct a signature for the transmission.
+A key property of backscatter tags is that they operate passively and don't require a power supply. This reduces the cost of implementing this scheme as tags can be simply and inexpensively attached to robots. Another useful property is that the backscattering of the final signal is highly correlated with the positions of the tags, transmitting and receiving antennae, meaning that if two identities have very similar backscattering patterns, they are likely to originate from the same entity.
 
-The authors then evaluate their implementation in both an indoor office environment and an outdoor rooftop environment. They find that their method is virtually indifferent to the surrounding environment, as they measure an average TP rate of \dots and FP rate of \dots.
+When a robot receives a signal, it receives a raw signal, which is first smoothed out with a moving average filter, to create the backscattered signal. Then it decodes a message out of the backscattered signal, and uses it, with signal processing techniques to deduce how much each tag contributed to the backscattering, and when each tag was ``activated''. Then the robot does more filtering to remove any backscattering from the environment, the resulting signal will be used to construct a signature for the transmission.
+
+The authors then evaluate their implementation in both an indoor office environment and an outdoor rooftop environment. They find that their method is virtually indifferent to the surrounding environment, as they measure an average true positive rate of 97.6\% and an average false positive rate of 5.1\%.
 
 \subsection{Conclusions}
 
@@ -68,11 +70,11 @@ Although both sets of authors extensively test their system, they make some prob
 \section{Proof of Work}
 Proof of Work is underpinned by the insight that no entity in a network has the ability to perform unlimited computation.
 
-This leads us to think that if generating an ID is expensive enough, then people won't be able to do it. Proof of work exploits this idea by requiring each entity to solve a computationally expensive puzzle to claim an ID, which because of the assumption above, means that making up false IDs can be done, but would incur significant costs to whomstever did them. The puzzles must be hard to solve but easy to check \dots NP \citationneeded. 
+This leads us to think that if generating an ID is expensive enough, then people won't be able to do it. Proof of work exploits this idea by requiring each entity to solve a computationally expensive puzzle to claim an ID, which because of the assumption above, means that making up false IDs can be done, but would incur significant costs to whomstever did them. The puzzles must be hard to solve but easy to check \dots NP\citationneeded. 
 
-The problem with this strat is that it's super duper wasteful since the puzzle solved is never used for anything except verification. Furthermore, robots don't tend to have super powerful systems onboard, which means that they don't really have the resources to spare to solve nonsense problems. This strat also means that good bots have to pay the price for bad bots, which ain't great since bad bots are unlikely to actually be there, in fact we can basically assume that in most cases, the robot net won't be under attack, that an attack would be a Black Swan event.
+The problem with this strat is that it's super duper wasteful since the puzzle solved is never used for anything except verification. Furthermore, robots don't tend to have super powerful systems onboard, which means that they don't really have the resources to spare to solve nonsense problems. This strat also means that good bots have to pay the price for bad bots, which ain't great since bad bots are unlikely to actually be there, in fact, we can basically assume that in most cases, the robot net won't be under attack, that an attack would be a Black Swan event.
 
-In this section we'll discuss several solutions to this problem.
+In this section, we'll discuss several solutions to this problem.
 
 
 
@@ -81,13 +83,13 @@ Explain what problems w PoW they find
 
 Explain how they solve them and the results
 
-\subsection{Paper series 2 - Strobel et al.}
+% \subsection{Paper series 2 - Strobel et al.}
 
-Explain what problems w PoW they find
+% Explain what problems w PoW they find
 
-Explain how they solve them and the results
+% Explain how they solve them and the results
 
-\subsection{Conclusions}
+% \subsection{Conclusions}
 
 \section{Attacks on sensor networks}
 
