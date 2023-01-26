@@ -68,28 +68,19 @@ Although both sets of authors extensively test their system, they make some prob
 % \todo{Add diagram for 3}
 
 \section{Proof of Work}
-Proof of Work is underpinned by the insight that no entity in a network has the ability to perform unlimited computation.
+Proof of Work is underpinned by the insight that no entity in a network can perform unlimited computation. This leads to defences reliant on the idea that generating identities should be computationally expensive, to prevent any entity from being able to create an unbounded number of them. A PoW identity generation scheme would express an identity as the solution to some puzzle, and thus the identity can be validated by checking if it is a valid solution to the puzzle. This imposes two constraints: \begin{enumerate*}
+    \item the puzzle must be hard to solve and
+    \item the solution to a puzzle must be easy to verify
+\end{enumerate*}, which means that, formally, the puzzle belongs to the \textit{NP-Complete} class of problems.
 
-This leads us to think that if generating an ID is expensive enough, then people won't be able to do it. Proof of work exploits this idea by requiring each entity to solve a computationally expensive puzzle to claim an ID, which because of the assumption above, means that making up false IDs can be done, but would incur significant costs to whomstever did them. The puzzles must be hard to solve but easy to check \dots NP\citationneeded. 
+A problem with this strategy is that it requires wasting computational resources, which may be in short supply for the embedded systems used in robotics. Furthermore, it requires that normal robots constantly pay a steep price for their security even without the presence of attackers.
 
-The problem with this strat is that it's super duper wasteful since the puzzle solved is never used for anything except verification. Furthermore, robots don't tend to have super powerful systems onboard, which means that they don't really have the resources to spare to solve nonsense problems. This strat also means that good bots have to pay the price for bad bots, which ain't great since bad bots are unlikely to actually be there, in fact, we can basically assume that in most cases, the robot net won't be under attack, that an attack would be a Black Swan event.
+Gupta et al. \cite{PoW} design an iterative algorithm (\textbf{GMCom}) that solves the \nthM{2} problem, where if attackers spend $T$ resources, whilst $J$ new non-attacking identities are presented, then each non-attacker only needs to spend $O(\sqrt[2]{TJ} + J)$ resources. They refer to this property as the \textit{assymetry} of the algorithm, as attackers must spend many more resources than non-attackers.
 
-In this section, we'll discuss several solutions to this problem.
+GMCom organises identities into a group, where a subset of them form a committee. When a new identity tries to join the group, it must first solve a puzzle set by the committee. Occasionally, the committee will seek to purge all attackers from the group, by issuing a \textit{purge puzzle}, which must be solved by all identities before a new committee is formed, otherwise the identity will be purged from the group. This limits the wasted computation that good entities must perform since they only need to solve a single puzzle when entering a group, and occasionally thereafter, whilst an attacker would need to solve puzzles for each identity it claims, and would need to solve them repeatedly to avoid being purged.
 
+However, this approach is not without its limitations. The authors assume that attackers will always only be able to command a fraction, $\alpha$, of the total resources of the system, however, the heterogeneous nature of robots means that this may not always be guaranteed. For example, in a drone delivery system, each drone would likely only possess a small amount of computational power, but an attacker may attack the system using their desktop computer.
 
-
-\subsection{Paper series 1 - Gupta et al.}
-Explain what problems w PoW they find
-
-Explain how they solve them and the results
-
-% \subsection{Paper series 2 - Strobel et al.}
-
-% Explain what problems w PoW they find
-
-% Explain how they solve them and the results
-
-% \subsection{Conclusions}
-
-\section{Attacks on sensor networks}
-
+% GMCom organises identities into a group, where a subset of them form a committee. When a new identity tries to join the group, it must first solve a current epoch's puzzle, set by the committee, and broadcast its solution. Once a certain number of identities has joined or left the group, the committee starts the next epoch with a new puzzle and new committee. 
+% \section{Attacks on sensor networks}
+% \section{Reputation based systems}
