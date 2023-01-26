@@ -1,13 +1,20 @@
 \chapter{Introduction}
 \section{Objectives}
-I want to allow multiple robots, owned by different people, with different goals to be able to safely operate in the same environment. To do this they need to be able to communicate. They can communicate for several different reasons, they could talk about where they think each other is, they could share information about what they've seen (map info) or share information about obstacles they see/perform sanity checks on each other (tesla example). They could even tell each other their near-term plans, in order path plan better. 
 
-Now, this sounds utopian, but we must first remember that bad actors exist and will attack this system, so we must be prepared. Bad actors may have many different goals, in space mining they merely could seek to hoard good asteroids for themselves, whereas terrorists could aim to cause multiple car crashes.
+The field of distributed robotics is a growing one, partly due to the growth of the number of applications involving it (autonomous vehicles and drone delivery systems) and partly because of increased interest in areas which would greatly benefit from it, such as the Lunar Gateway Project, or the Mars 2020 Perseverance Mission.
 
-Some research in this field has been done (cite robotweb and the non orca paper), and yet there is still so much more to be done. 
+An open problem in this distributed robotics is that of effective inter-robot communication. Inter-robot communication provides several benefits to distributed robotics; it allows robots to
+\begin{enumerate*}
+    \item acquire a more accurate view of their environment,
+    \item gain access to a larger map of the world and
+    \item improve their path planning by incorporating others' plans.
+\end{enumerate*}
 
-I stand at the foot of this mountain, seeking to take my first steps.
+A subset of distributed robotics research is dedicated to finding ways to allow such communication in situations where some of the robots may act with hostility. The source of this hostility could be unnatural, where a bad actor solely seeks to disrupt the system, or it could be a natural consequence of competition in the environment, such as a self-driving car trying to prevent others from overtaking it. 
+
+This hostility must be protected against if the benefits of communication and collaboration can be seized. This is the principal focus of this Master's Thesis.
+
 
 \section{Challenges}
 \section{Contributions}
-Currently, the main contributions of this paper are the background research that has been done, and some (not included) preliminary results on the effectiveness of some attacks. This is subject to change with time.
+Currently, the main contributions of this paper can be found in the background research section and some of the preliminary results on the effectiveness of attacks on robot networks. This is subject to change with time.
