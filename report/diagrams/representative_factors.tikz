@@ -1,0 +1,25 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,171); %set diagram left start at 0, and has height of 171
+
+%Straight Lines [id:da9426074160582016] 
+\draw    (399.22,143.78) -- (359.94,143.66) ;
+%Straight Lines [id:da643000004312603] 
+\draw    (399.22,143.78) -- (438.5,143.66) ;
+%Shape: Circle [id:dp3724334158586291] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (389.81,142.22) .. controls (389.81,137.03) and (394.02,132.81) .. (399.22,132.81) .. controls (404.41,132.81) and (408.62,137.03) .. (408.62,142.22) .. controls (408.62,147.41) and (404.41,151.63) .. (399.22,151.63) .. controls (394.02,151.63) and (389.81,147.41) .. (389.81,142.22) -- cycle ;
+%Shape: Square [id:dp37804195853429245] 
+\draw  [fill={rgb, 255:red, 255; green, 147; blue, 147 }  ,fill opacity=1 ] (350.66,132.81) -- (369.22,132.81) -- (369.22,151.37) -- (350.66,151.37) -- cycle ;
+%Shape: Square [id:dp19659269496953535] 
+\draw  [fill={rgb, 255:red, 104; green, 195; blue, 163 }  ,fill opacity=1 ] (429.22,132.81) -- (447.78,132.81) -- (447.78,151.37) -- (429.22,151.37) -- cycle ;
+
+% Text Node
+\draw (428.22,113.4) node [anchor=north west][inner sep=0.75pt]    {$f_{G}$};
+% Text Node
+\draw (350.22,113.4) node [anchor=north west][inner sep=0.75pt]    {$f_{B}$};
+
+
+\end{tikzpicture}

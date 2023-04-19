@@ -1,39 +1,209 @@
-\chapter{Project Plan}
+\chapter{An Investigation into the Security of RobotWeb}
 
-\section{Current State}
-Since this thesis involves extending the Robot Web, I'll briefly explain how the current codebase works. The codebase simulates a set of agents moving along fixed paths, in the Robot Web. It takes a configuration file as an input, which defines how many agents should exist, what the paths should be, where beacons should be placed and how much noise exists in the system. The simulator can also run in headless mode, where it logs each robot's estimated pose against time, which can be used to calculate summary statistics.
+In this chapter, I'm going to investigate how RobotWeb behaves in certain adverse conditions.
+I'll start by explaining how I believe an ideal attacker would behave in the RobotWeb.
+Then I'll analyse a simplified version of the RobotWeb under attack, and derive some properties of the system.
+From these properties, I will finally present and test several hypotheses regarding how the full RobotWeb would behave.
 
-The codebase was originally designed to work with identical ``agents'' (robots) moving along fixed paths. Since attackers weren't present, the code was able to use a single connected factor graph, rather than a distributed set of fragments, which was a problem as it didn't make it easy for agents to control their message passing. The consequence of this was that it made it harder to implement attacks and defences. 
+\section{How would an ideal attacker behave?}
+First I want to talk about how normal robots will move around
+From this, I'll be able to give you some intuition behind why attackers would want to make certain choices.
+The utility of a robot<->robot message depends on the localisation accuracy of the robot and its sensors' precision.
 
-First, I changed the code to allow different types of agents to exist within a configuration. Then I refactored the code to distribute fragments of the factor graph to each agent, which would allow them to attack others/defend themselves by taking control of which messages they send and receive. I've also added a host of different configurable tracks for the robots to move along, which can be seen below. I think will help with experimentation later in the project.
+Now we're going to talk about how an attacker would work.
+An attacker can either be a robot or a beacon on the web.
 
-I've also implemented some basic attacks on the system. These include:
+If you're an attacking robot, you still need a way of localising yourself.
+Now this method might be an external system, or it could be the RobotWeb itself.
+If the attacker uses an external system, there's nothing we can do about it, but if it uses the RobotWeb,
+then it has an incentive to preserve some parts of the web, since it doesn't want to rely on garbage data.
+This would lead the robot to only attack a subset of robots in the RobotWeb, or attack robots for a small amount of time.
+
+No good attacker would be ineffective, i.e. have its attacks do absolutely nothing.
+In fact a good attacker would try to dictate the victim's location to it.
+
+An attacker would also not like to be easily identified, because that would very quickly stop its attack.
+This means that attacks are likely to be more subtle, i.e. instead of telling a robot it's 100 meters away, an attacker might only shift the robot by 10cm.
+Basically it'll do the least it can do to achieve it's goal. 
+
+If there are multiple attackers in the environment, their attack will be more likely to succeed if they all collaborate, rather than if they compete.
+It is for this reason that we will ignore the existence of multiple independent attackers in the environment.
+
+\section{A simplified system}
+Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph.
+However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them.
+Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other.
+In the face of this complexity, it becomes clear that a simplification is needed.
+
+To start, we choose to limit our investigation to a single variable, chosen arbitrarily, in the factor graph. 
+Fortunately, the properties of Belief Propagation allow us to reason about this variable without loss of generality.
+Equation \ref{eqn:bp_belief} shows that the belief of a given variable is solely dependent on its connected factors. 
+
+\begin{figure}[!h]
+    \centering
+    \input{diagrams/simple_factor_graph.tikz}
+
+    \caption[Single Variable in a Factor Graph]{A single variable connected to a number of factors}
+\end{figure}
+
+One problem still remains with the above setup - a single variable can be connected to any number of factors. 
+As a further simplification, we can group the factors together based off their shared characteristics, which include their origin (if they are internal to the robot or not), their type (what kind of sensor they represent) and their intentions (whether they will help or hinder the robot).
+For our purposes, we will split the set of factors $F$, into sets $G$ and $B$ based off whether the factors are ``good'' or ``bad'' for the robot.
+Good factors aim to steer the variable towards the a ground truth value, while bad factors aim to steer it away.
+Notice that the sets $G$ and $B$ form a cover of $F$, that is $F = G \cup B$.
+
+We then take this a step further and replace each set of factors with a single ``representative factor''.
+\begin{figure}[!ht]
+    \centering
+    \input{diagrams/representative_factors.tikz}
+
+    \caption[Representative factor graph around a single variable]{The above factor graph using ``representative factors''. $f_G$ and $f_B$ respectively represent the sets of good factors ($G$) and bad factors ($B$).}
+\end{figure}
+
+We calculate the messages from each of these representative factors as such:
+\begin{eqnarray}
+    m_{f_G \rightarrow x_i} = \underset{g \in G}{\prod} m_{f_g \rightarrow x_i}&
+    m_{f_B \rightarrow x_i} = \underset{b \in B}{\prod} m_{f_b \rightarrow x_i}
+\end{eqnarray}
+Thus the belief of the variable becomes $p(x) = m_{f_G \rightarrow x} m_{f_B \rightarrow x}$, and since $G \cup B$ covers every factor connected to the variable, we can show that this replacement can be made without altering the variable's final result by equation \ref{eqn:bp_belief}.
+
+\begin{equation}
+    p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
+    \tag{\ref{eqn:bp_belief}}
+\end{equation}
+
+For completeness we now present the equations for contents of the messages $m_{f_G \rightarrow x_i}$ and $m_{f_B \rightarrow x_i}$. 
+Each message is has an information vector $\eta$ and a precision matrix $\Lambda$.
+\begin{eqnarray}
+    \eta_G = \underset{g \in G}{\sum} \eta_g&
+    \Lambda_G = \underset{g \in G}{\sum} \Lambda_g\\
+    \eta_B = \underset{b \in B}{\sum} \eta_b&
+    \Lambda_B = \underset{b \in B}{\sum} \Lambda_b
+\end{eqnarray}
+
+\section{Theoretical properties of the RobotWeb under attack}
+\subsection{Measuring the strength of an attack}
+From the above setup we will now aim to quantify the strength of an attack. 
+For mathematical convenience and ease of understanding, we will derive these equations in 1 dimension, and later present the n-dimensional forms.
+
+To measure the strength of an attack we want to understand the impact of the bad factors on the variable's final belief. 
+To do this we shall use the Kullback-Leibler (KL) divergence \citationneeded between the variable's belief when it is safe and when it is under attack.
+The KL divergence is a measure of far the distribution Q is from the distribution P. 
+The further the belief distribution under attack (BDA) is from the distribution suggested by the good factors, the stronger we say the attack is.
+Similarly, the closer the BDA is to the distribution suggested by the bad factors, the stronger the attack.
+
+The KL divergence between 2 distributions of continuous random variables is:
+\begin{equation}
+    D_{KL}(P || Q) = \int_{-\infty}^{\infty} log\left( \frac{p(x)}{q(x)} \right) dx
+\end{equation}
+
+However a special case exists for Normal distributions, $N_1(\mu_1, \sigma_1^2)$ and $N_2(\mu_2, \sigma_2^2)$.
+\begin{equation}
+    D_{KL}(N_1 || N_2) = log\left(\frac{\sigma_2}{\sigma_1}\right) + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+\end{equation}
+
+In 1 dimension the messages sent from $f_G$ and $f_B$ are:
+\begin{eqnarray}
+    m_{f_G \rightarrow x_i} = (\eta_G, \Lambda_G) = (\frac{\mg}{\sgsq}, \frac{1}{\sgsq})\\
+    m_{f_B \rightarrow x_i} = (\eta_B, \Lambda_B) = (\frac{\mb}{\sbsq}, \frac{1}{\sbsq}) \label{eqn:attacker_msg}
+\end{eqnarray}
+
+From \ref{eqn:bp_belief} we see that the BDA is equal to:
+\begin{align}
+    m_{f_G \rightarrow x} m_{f_B \rightarrow x} 
+    &= (\eta_G + \eta_B, \Lambda_G + \Lambda_B)\\
+    &= \left(\frac{\mg}{\sgsq} + \frac{\mb}{\sbsq}, \frac{1}{\sgsq} + \frac{1}{\sbsq}\right)\\
+    &= \left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq \sbsq}, \frac{\sbsq + \sgsq}{\sgsq \sbsq}\right)
+\end{align}
+
+The above distributions follow the following Normal distributions:
+\begin{align}
+    G &\sim N\left(\frac{\eta_G}{\Lambda_G}, \frac{1}{\Lambda_G}\right)\\
+    B &\sim N\left(\frac{\eta_B}{\Lambda_B}, \frac{1}{\Lambda_B}\right)\\
+    BDA &\sim N\left(\mu_{BDA}, \sigma_{BDA}^2\right)\\
+    &\sim N\left(\frac{\eta_G + \eta_B}{\Lambda_G + \Lambda_B}, \frac{1}{\Lambda_G + \Lambda_B}\right)\\
+    &\sim N\left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}, \frac{\sgsq \sbsq}{\sgsq + \sbsq}\right) \label{eqn:bda_distribution}
+\end{align}
+
+So now we take the KL divergence between the good factors' distribution $G$ and BDA. To make this easier to follow we derive each term in the sum separately.
+
+First deriving the log term we get:
+\begin{align}
+    log\left(\frac{\sigma_{BDA}}{\sigma_{G}}\right)
+    &= log\left(\sqrt[2]{\frac{\sigma_{BDA}^2}{\sigma_{G}^2}}\right)\\
+    &= \frac{1}{2} log\left(\frac{\sigma_{BDA}^2}{\sigma_{G}^2}\right)\\
+    &= \frac{1}{2} log\left(\frac{\sgsq \sbsq}{\sbsq + \sgsq} \times \frac{1}{\sgsq}\right)\\
+    &= \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right)
+\end{align}
+
+Next we derive the fractional term:
+\begin{align}
+    \frac{\sigma_{G}^2 + (\mu_{G} - \mu_{BDA})^2}{2\sigma_{BDA}^2}
+    &= \frac{
+            \sgsq + \left(\mg - \frac{\mg\sbsq + \mb\sgsq}{\sbsq + \sgsq}\right)^2
+        }{
+            2 \frac{\sgsq \sbsq}{\sbsq + \sgsq}
+        }\\
+    &= \left(\sgsq + \left(\frac{\mg\sgsq + \mg\sbsq - \mg\sbsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+    &= \left(\sgsq + \left(\frac{\mg\sgsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+    &= \frac{\sgsq\left(\sgsq + \sbsq\right)^2  + \left(\mg\sgsq - \mb\sgsq\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+    &= \frac{\sgsq\left(\sgsq + \sbsq\right)^2  + \sigma_G^4\left(\mg - \mb\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+    &= \frac{\left(\sgsq + \sbsq\right)^2  + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)}
+\end{align}
+
+Thus the KL divergence between $G$ and BDA is:
+\begin{equation}
+    \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2  + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)} - \frac{1}{2}
+\end{equation}
+
+Similarly the KL divergence between $B$ and BDA is:
+\begin{equation}
+    \frac{1}{2} log\left(\frac{\sgsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2  + \sbsq\left(\mg - \mb\right)^2}{2\sgsq(\sbsq + \sgsq)} - \frac{1}{2}
+\end{equation}
+
+From this we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. 
+This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. That an attacker can always command a robot to reject the evidence of its own peers and sensors. 
+That the attacker can always craft messages to trick a robot into believing absurdities about its location.
+
+\subsection{Crafting the perfect message}
+From the results derived in the previous section, we know that theoretically an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. 
+However, in a real life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
 \begin{enumerate}
-    \item  The ``overconfidence attack'' where an attacker sends a bad reading with a tiny standard deviation.
-    \item The ``spoofing attack'' where an attacker sends these measurements but uses the ID of a different agent.
-    \item The Sybil attack, where an attacker sends bad readings from many phantom agents. An interesting side note here is that the readings for the Sybil attack don't need to modify the standard deviation in the messages, which means that victims won't be able to easily distinguish them from correct messages.
+    \item Robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
+    \item Robots don't have infinite numerical precision, so large values of $\Lambda_B$ ($\frac{1}{\sbsq}$) would cause overflow errors, which would prevent the attacker from controlling the robot's belief.
 \end{enumerate}
-Right now these attacks are in a basic state since they don't try to defeat any countermeasures that can be used.
 
-Finally, I've written an experiment runner script, which would generate several configurations, run the simulation using them, and graph the results. This is mainly to automate experimentation.
+Given these restrictions, attackers would set their values of $\mb$ to believable values, whilst choosing the largest value of $\sbsq$ possible. 
+We will now suppose that the attacker wishes to move its victim's belief from $\mg$ to $\mt$. \todo{Does the standard deviation matter here?}
+As before, the attacker sends a message with the form described in equation \ref{eqn:attacker_msg}.
 
-\section{Milestones}
-\newcommand{\foo}{\hspace{-2.3pt}$\bullet$ \hspace{5pt}}
+So from equation \ref{eqn:bda_distribution}, we see that:
+\begin{equation}
+    \mt = \frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}
+\end{equation}
 
-\scalebox{1}{
-\begin{tabular}{r |@{\foo} l}
+Which can be rearranged to the form:
+\begin{equation}
+    \mb = \frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq}
+\end{equation}
 
-Mid-Feb 2023 & Fully finish refactoring taking into account feedback from an early January meeting\\
-End-Feb 2023 & Finalise some ideas on how to defend against all attacks on robot localisation\\
-Mid-Mar 2023 & Implement the defenses\\
-End-Mar 2023 & Exam revision\\
-Mid-Apr 2023 & Extend RobotWeb to allow non-robot localisation\\
-End-Apr 2023 & Implement/Extend defences for this\\
-Mid-May 2023 & Run experiments on physical robots\\
-End-June 2023 & Write report.
+Which can be used to calculate the $\mb$ that an attacker would send given a minimum $\sbsq$. 
+Thus the attacker would send the following message:
+\begin{equation}
+    \left(\frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq\sbsq}, \frac{1}{\sbsq}\right)
+\end{equation}
 
-\end{tabular}
-}
+\subsection{Scaling back up to n-dimensional space}
+\todo{TODO: Derive this}
 
-\section{Stretch Goals}
-The main stretch goal I have in mind is to further extend the security to allow robots to share their path information. This will be harder to do than the other defences, as it is only possible to find out if a robot has lied in the future when it either takes or doesn't take the path.
+\section{Hypotheses}
+In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. 
+These hypotheses will then be experimentally tested in the next section.
+
+\subsection{Bounds on $\mu$ can be slowly escaped} % frog slowly boiling in pot
+\subsection{Bounds on $\sigma$ can be quickly escaped} % 
+\subsection{Long histories are detrimental and easy to exploit} % History can be weaponised
+\subsection{Attacks can spread on their own} % A falling tide sinks all ships/Can't let the genie out of the bottle
+\subsection{Robots are most vulnerable on startup}
+
+\section{Experimental evidence to support these claims}

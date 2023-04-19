@@ -1,0 +1,43 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,288); %set diagram left start at 0, and has height of 288
+
+%Shape: Square [id:dp5011100430912303] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (221.44,121.44) -- (240,121.44) -- (240,140) -- (221.44,140) -- cycle ;
+%Shape: Square [id:dp1834276888413744] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (221.44,170) -- (240,170) -- (240,188.56) -- (221.44,188.56) -- cycle ;
+%Shape: Square [id:dp4346063530366504] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (221.44,71.44) -- (240,71.44) -- (240,90) -- (221.44,90) -- cycle ;
+%Straight Lines [id:da04926983509243965] 
+\draw    (230.72,130.72) -- (140.72,130.28) ;
+%Straight Lines [id:da6042872004378272] 
+\draw    (230.72,179.28) -- (140.72,80.28) ;
+%Straight Lines [id:da23454228445560488] 
+\draw    (140.72,178.84) -- (230.72,80.72) ;
+%Shape: Circle [id:dp7060474924289566] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (176.31,129.78) .. controls (176.31,124.59) and (180.53,120.37) .. (185.72,120.37) .. controls (190.91,120.37) and (195.13,124.59) .. (195.13,129.78) .. controls (195.13,134.97) and (190.91,139.19) .. (185.72,139.19) .. controls (180.53,139.19) and (176.31,134.97) .. (176.31,129.78) -- cycle ;
+%Shape: Square [id:dp12209236616988428] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (131.44,121) -- (150,121) -- (150,139.56) -- (131.44,139.56) -- cycle ;
+%Shape: Square [id:dp4564996494162272] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (131.44,169.56) -- (150,169.56) -- (150,188.12) -- (131.44,188.12) -- cycle ;
+%Shape: Square [id:dp4857190958072921] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (131.44,71) -- (150,71) -- (150,89.56) -- (131.44,89.56) -- cycle ;
+
+% Text Node
+\draw (143,98) node [anchor=north west][inner sep=0.75pt]  [rotate=-90] [align=left] {...};
+% Text Node
+\draw (143,148) node [anchor=north west][inner sep=0.75pt]  [rotate=-90] [align=left] {...};
+% Text Node
+\draw (232,98) node [anchor=north west][inner sep=0.75pt]  [rotate=-90] [align=left] {...};
+% Text Node
+\draw (232,148) node [anchor=north west][inner sep=0.75pt]  [rotate=-90] [align=left] {...};
+% Text Node
+\draw (112,32.4) node [anchor=north west][inner sep=0.75pt]    {$Internal$};
+% Text Node
+\draw (201,32.4) node [anchor=north west][inner sep=0.75pt]    {$External$};
+
+
+\end{tikzpicture}

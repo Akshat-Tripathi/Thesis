@@ -1,0 +1,43 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,288); %set diagram left start at 0, and has height of 288
+
+%Shape: Square [id:dp5011100430912303] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (221.44,121.44) -- (240,121.44) -- (240,140) -- (221.44,140) -- cycle ;
+%Shape: Square [id:dp1834276888413744] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (199.12,159.78) -- (217.68,159.78) -- (217.68,178.34) -- (199.12,178.34) -- cycle ;
+%Shape: Square [id:dp4346063530366504] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (199.12,81.22) -- (217.68,81.22) -- (217.68,99.78) -- (199.12,99.78) -- cycle ;
+%Straight Lines [id:da04926983509243965] 
+\draw    (230.72,130.72) -- (140.72,130.28) ;
+%Straight Lines [id:da6042872004378272] 
+\draw    (208.4,169.06) -- (163.04,90.5) ;
+%Straight Lines [id:da23454228445560488] 
+\draw    (163.04,169.06) -- (208.4,90.5) ;
+%Shape: Circle [id:dp7060474924289566] 
+\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (176.31,129.78) .. controls (176.31,124.59) and (180.53,120.37) .. (185.72,120.37) .. controls (190.91,120.37) and (195.13,124.59) .. (195.13,129.78) .. controls (195.13,134.97) and (190.91,139.19) .. (185.72,139.19) .. controls (180.53,139.19) and (176.31,134.97) .. (176.31,129.78) -- cycle ;
+%Shape: Square [id:dp12209236616988428] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (131.44,121) -- (150,121) -- (150,139.56) -- (131.44,139.56) -- cycle ;
+%Shape: Square [id:dp4564996494162272] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (153.76,159.78) -- (172.32,159.78) -- (172.32,178.34) -- (153.76,178.34) -- cycle ;
+%Shape: Square [id:dp4857190958072921] 
+\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (153.76,81.22) -- (172.32,81.22) -- (172.32,99.78) -- (153.76,99.78) -- cycle ;
+
+% Text Node
+\draw (225,100) node [anchor=north west][inner sep=0.75pt]  [rotate=-60] [align=left] {...};
+% Text Node
+\draw (221.25,157.5) node [anchor=north west][inner sep=0.75pt]  [rotate=60] [align=left] {...};
+% Text Node
+\draw (179,87.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+% Text Node
+\draw (145,145) node [anchor=north west][inner sep=0.75pt]  [rotate=-60] [align=left] {...};
+% Text Node
+\draw (179,167.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+% Text Node
+\draw (140,112.5) node [anchor=north west][inner sep=0.75pt]  [rotate=60] [align=left] {...};
+
+
+\end{tikzpicture}
