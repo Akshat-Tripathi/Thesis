@@ -206,6 +206,9 @@ Our final hypothesis is that robots that have just started up are likely to be t
 
 \section{Experimental evidence}
 \subsection{Experimental setup}
+We will test our hypotheses in a simulated environment, running the RobotWeb. Each robot, including the attacker, will travel along a predefined path. They will all carry a single \textbf{range-bearing} sensor which would measure the distance and bearing between the robot and what it has measured. All attackers will share a common target path, which they will aim to place their victims on.
+
+In order to link the experimental setup with a real-world application, we will consider the following task. There are several patrol robots patrolling a grid, however a subset of these robots are attackers, which aim to prevent their victims discovering a part of the environment. To do this, they will attack all normal robots in the vicinity of the special zone. Normal robots will only communicate with others if they have sensed them, whilst attackers may seek to also communicate with robots that they have not sensed.
 
 \subsection{Testing hypothesis 1}
 \subsection{Testing hypothesis 2}
