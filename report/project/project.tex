@@ -76,9 +76,9 @@ For completeness we now present the equations for contents of the messages $m_{f
 Each message is has an information vector $\eta$ and a precision matrix $\Lambda$.
 \begin{eqnarray}
     \eta_G = \underset{g \in G}{\sum} \eta_g&
-    \Lambda_G = \underset{g \in G}{\sum} \Lambda_g\\
+    \Lambda_G = \underset{g \in G}{\sum} \Lambda_g \label{eqn:good_pull}\\
     \eta_B = \underset{b \in B}{\sum} \eta_b&
-    \Lambda_B = \underset{b \in B}{\sum} \Lambda_b
+    \Lambda_B = \underset{b \in B}{\sum} \Lambda_b \label{eqn:bad_pull}
 \end{eqnarray}
 
 \section{Theoretical properties of the RobotWeb under attack}
@@ -201,9 +201,39 @@ In this section, we will present 5 hypotheses about the behaviour of the entire 
 These hypotheses will then be experimentally tested in the next section.
 
 \subsection{Bounds on $\mu$ can be slowly escaped} % frog slowly boiling in pot
-\subsection{Bounds on $\sigma$ can be quickly escaped} % 
+An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its previous position. 
+However, we believe that this approach is ineffective, and can be easily evaded by attackers. 
+In this subsection, we will lay out how this defence would work and how it can be bypassed.
+
+For the upper bound to be effective, it must occupy a ``Goldilocks zone'' - it cannot be too large or too small. 
+If the upper bound is too large, it would present attackers with ample opportunities to control the robot's belief, especially since they aim to suggest somewhat plausible positions.
+If the upper bound is too small, it would effectively prevent the robot from listening to any dissenting messages from other good robots.
+
+Now suppose that at time $t$, the robot is at position $\mu_t$ and has a upper bound of $\epsilon$. 
+It would then evaluate each incoming message and reject it if its proposed position $\mu'_t$ is a distance $\epsilon$ away from $\mu_t$. 
+After filtering out all ``bad'' messages, the robot would use the remaining messages to determine $\mu_{t+1}$. 
+
+Being aware of this scheme, and attacker would seek to incrementally attack the robot.
+It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. 
+This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. 
+In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$.
+Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
+\todo{Would a diagram be useful here?}
+
+\subsection{Bounds on $\Lambda$ can be quickly escaped}
+As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. Which leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$  values that they receive. We believe that this strategy is effective when there is only a single identity spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
+
+The $\Lambda$ value of a message can be though of as its ``pull'', or how strongly the message would move a variable towards its proposed location. The greater the value, the stronger the pull. \todo{Norms?} With this in mind, we can think of the robot's location estimate as being ``pulled'' by good and bad factors, where good factors pull the estimate towards a ground truth, whilst bad factors pull it to an alternate location. 
+
+When sending a message, each robot decides the strength of the message's pull. Good robots limit their strength to the accuracy of their sensors, while attackers will set their strength to the fullest extent. This once again makes the case for the use of a reasonable upper bound on the strength of a message, similar to the one described above.
+
+We argue that this upper bound is unenforceable in practice, for an attacker can simply ``split'' their message into several weaker parts. So far in our analysis, we have treated $\Lambda_B$ as if it were sent in a single message, however from equation \ref{eqn:bad_pull} we can see that it may also be the result of several bad robots sending messages. In fact, if the upper bound on an individual message's $\Lambda$ is $\lambda$, then an attacker could simply send several messages from several different identities to arrive at a strong $\Lambda_B$, in a Sybil Attack. \todo{Should I add maths here too?}
+\subsubsection{Aside: Attacks are uncorrelated}
+Considering the ``pull based model'' of variables, it stands to reason that in a Sybil Attack, the messages sent by individual identities will not be correlated with each other, as that would greatly simplify the detection and prevention of attacks. Instead, we believe that Sybil Attackers would send messages with wildly different $\mu$ values, that would ``resolve'' to the actual attack that the attacker intends.
+
 \subsection{Long histories are detrimental and easy to exploit} % History can be weaponised
 \subsection{Attacks can spread on their own} % A falling tide sinks all ships/Can't let the genie out of the bottle
 \subsection{Robots are most vulnerable on startup}
 
-\section{Experimental evidence to support these claims}
+\section{Experimental evidence}
+\subsection{Experimental setup}
