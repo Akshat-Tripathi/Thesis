@@ -1,30 +1,16 @@
 \chapter{An Investigation into the Security of RobotWeb}
-
 This chapter will investigate the behaviour of the RobotWeb when it is under attack. We will start by definining the expected behaviour of an attacker, including its incentives to attack. From then, we will construct and examine a simplified version of the RobotWeb to determine how victims of an attack will behave. Finally, we present and test several hypotheses about the behaviour of the RobotWeb under attack.
 
-\section{How would an ideal attacker behave?}
-First I want to talk about how normal robots will move around
-From this, I'll be able to give you some intuition behind why attackers would want to make certain choices.
-The utility of a robot<->robot message depends on the localisation accuracy of the robot and its sensors' precision.
+\section{The behaviour of an ideal attacker}
+In order to predict the nature of an attacker's behaviour, we must first understand how normal robots behave in the RobotWeb. At all times, a robot will have a noisy estimate of its current position, as it moves the associated noise will grow. When robot $r_1$ encounters another $r_2$, it measures it and creates a factor between its own and $r_2$'s current pose variable. Both robots will then exchange messages to each other over the factor, both using the messages to improve their own location estimates and decrease their uncertainty. In addition to other robots, a robot may measure a fixed beacon, which once again creates a factor between them, however, here only the robot will update its position estimate, as the beacon does not move. The quality of all sent message is dependent on the sender's own position accuracy and the accuracy of its sensors.
 
-Now we're going to talk about how an attacker would work.
-An attacker can either be a robot or a beacon on the web.
+An attacker can take the form of either another robot or a beacon in the RobotWeb. Regardless of the form taken by the attacker, its goal would be to control the other robots' position estimates, by sending specially crafted messages.
 
-If you're an attacking robot, you still need a way of localising yourself.
-Now this method might be an external system, or it could be the RobotWeb itself.
-If the attacker uses an external system, there's nothing we can do about it, but if it uses the RobotWeb,
-then it has an incentive to preserve some parts of the web, since it doesn't want to rely on garbage data.
-This would lead the robot to only attack a subset of robots in the RobotWeb, or attack robots for a small amount of time.
+All robots require a method to localise themselves as part of their normal operations, even attackers. Normal robots use the RobotWeb to do this, while we have no guarantees on the methods that potential attackers may use. An attacker may use an external system for localisation, or even a private RobotWeb, which renders it impervious to any consequences for its actions. However, some attackers may instead choose to participate in the RobotWeb in order to avoid the complexity of using an alternative system. Participating attackers would then have incentive to partially preserve the RobotWeb as they themselves are dependent on it. This dependency is likely cause attackers to only attack a small subset of robots, or only attack robots for a small amount of time. 
 
-No good attacker would be ineffective, i.e. have its attacks do absolutely nothing.
-In fact a good attacker would try to dictate the victim's location to it.
+It is self-evident that all attackers would seek to be effective i.e. thier attacks should have a high chance of working especially when no defences are present. In seeking effectiveness in the face of defences, attackers should not want their attacks to be easily identified, as identified attacks can be easily defended against. Thus it stands to reason that attacks are likely to be subtly executed, such that their victims would be able to believe them. For example, an attack that suggests that a small robot has moved 10km in 5s is guaranteed to fail.
 
-An attacker would also not like to be easily identified, because that would very quickly stop its attack.
-This means that attacks are likely to be more subtle, i.e. instead of telling a robot it's 100 meters away, an attacker might only shift the robot by 10cm.
-Basically it'll do the least it can do to achieve it's goal. 
-
-If there are multiple attackers in the environment, their attack will be more likely to succeed if they all collaborate, rather than if they compete.
-It is for this reason that we will ignore the existence of multiple independent attackers in the environment.
+Finally, in the event that multiple attackers are present in the environment, they would do best to collaborate rather than compete, as it would raise the effectiveness of them all. Since competing attackers are less effective than collaborating attackers, we shall spend less time considering them.
 
 \section{A simplified system}
 Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph. However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them. Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other.
@@ -220,3 +206,9 @@ Our final hypothesis is that robots that have just started up are likely to be t
 
 \section{Experimental evidence}
 \subsection{Experimental setup}
+
+\subsection{Testing hypothesis 1}
+\subsection{Testing hypothesis 2}
+\subsection{Testing hypothesis 3}
+\subsection{Testing hypothesis 4}
+\subsection{Testing hypothesis 5}
