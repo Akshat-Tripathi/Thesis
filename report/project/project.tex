@@ -231,9 +231,19 @@ We argue that this upper bound is unenforceable in practice, for an attacker can
 \subsubsection{Aside: Attacks are uncorrelated}
 Considering the ``pull based model'' of variables, it stands to reason that in a Sybil Attack, the messages sent by individual identities will not be correlated with each other, as that would greatly simplify the detection and prevention of attacks. Instead, we believe that Sybil Attackers would send messages with wildly different $\mu$ values, that would ``resolve'' to the actual attack that the attacker intends.
 
-\subsection{Long histories are detrimental and easy to exploit} % History can be weaponised
+\subsection{Long histories are detrimental} % History can be weaponised
+One little discussed feature of the RobotWeb so far has been its time-windowed history. Instead of remembering every past position that that robot has had, it instead chooses to only remember the past $h$ positions. This improves the performance of robots in the RobotWeb, as they store fewer pose variables and thus perform fewer floating-point operations when updating beliefs. In the original paper, Murai et al. show that the impact of time-windowed history on the average trajectory error of each robot is negligible.
+
+\todo{Add graph}
+
+We believe that keeping the full position history not only has an adverse impact on the compuational performance of a robot, but also amplifies the strength of attacks. If an attacker is able to successfully attack a robot at time $t$, then the pose variable at $t$, $v_t$ will contain a $\mu$ close to the attacker's target $\mu$, and its $\Lambda$ will be high. If $v_t$ is then used to estimate the robot's position at time $t+1$, then it will effectively also attack the robot, as it would further the attacker's belief. The longer the history kept by a robot, the more power an attacker can gain over it.
+
 \subsection{Attacks can spread on their own} % A falling tide sinks all ships/Can't let the genie out of the bottle
+Similarly to the previous hypothesis, we can assume that any other variable connected to $v_t$ will be attacked by it. Thus a victim of an attack will unintentionally attack all those it contacts, meaning that attacks have a degree of contagion. 
+
+Attackers may not be able to prevent or limit contagion, as they would need to strongly pull unintentional victims back to a ground truth value. Since no robot has absolute certainty about the locations of any other, the attacker will actually pull them to values close to their ground truth. However, as there is no mechanism to increase $\Lambda$, the attacker will still make the other robots overconfident about their locations, which may bias them in the long term.
 \subsection{Robots are most vulnerable on startup}
+Our final hypothesis is that robots that have just started up are likely to be the most affected by attacks, as they wouldn't have a strong estimate of their location. This would mean that their $\Lambda_G$ is much lower than older robots, increasing the strength of the attack.
 
 \section{Experimental evidence}
 \subsection{Experimental setup}
