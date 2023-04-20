@@ -1,9 +1,6 @@
 \chapter{An Investigation into the Security of RobotWeb}
 
-In this chapter, I'm going to investigate how RobotWeb behaves in certain adverse conditions.
-I'll start by explaining how I believe an ideal attacker would behave in the RobotWeb.
-Then I'll analyse a simplified version of the RobotWeb under attack, and derive some properties of the system.
-From these properties, I will finally present and test several hypotheses regarding how the full RobotWeb would behave.
+This chapter will investigate the behaviour of the RobotWeb when it is under attack. We will start by definining the expected behaviour of an attacker, including its incentives to attack. From then, we will construct and examine a simplified version of the RobotWeb to determine how victims of an attack will behave. Finally, we present and test several hypotheses about the behaviour of the RobotWeb under attack.
 
 \section{How would an ideal attacker behave?}
 First I want to talk about how normal robots will move around
@@ -30,147 +27,132 @@ If there are multiple attackers in the environment, their attack will be more li
 It is for this reason that we will ignore the existence of multiple independent attackers in the environment.
 
 \section{A simplified system}
-Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph.
-However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them.
-Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other.
+Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph. However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them. Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other.
 In the face of this complexity, it becomes clear that a simplification is needed.
 
-To start, we choose to limit our investigation to a single variable, chosen arbitrarily, in the factor graph. 
-Fortunately, the properties of Belief Propagation allow us to reason about this variable without loss of generality.
-Equation \ref{eqn:bp_belief} shows that the belief of a given variable is solely dependent on its connected factors. 
+To start, we choose to limit our investigation to a single variable, chosen arbitrarily, in the factor graph. Fortunately, the properties of Belief Propagation allow us to reason about this variable without loss of generality. Equation \ref{eqn:bp_belief} shows that the belief of a given variable is solely dependent on its connected factors. 
 
 \begin{figure}[!h]
-    \centering
-    \input{diagrams/simple_factor_graph.tikz}
+	\centering
+	\input{diagrams/simple_factor_graph.tikz}
 
-    \caption[Single Variable in a Factor Graph]{A single variable connected to a number of factors}
+	\caption[Single Variable in a Factor Graph]{A single variable connected to a number of factors}
 \end{figure}
 
-One problem still remains with the above setup - a single variable can be connected to any number of factors. 
-As a further simplification, we can group the factors together based off their shared characteristics, which include their origin (if they are internal to the robot or not), their type (what kind of sensor they represent) and their intentions (whether they will help or hinder the robot).
-For our purposes, we will split the set of factors $F$, into sets $G$ and $B$ based off whether the factors are ``good'' or ``bad'' for the robot.
-Good factors aim to steer the variable towards the a ground truth value, while bad factors aim to steer it away.
-Notice that the sets $G$ and $B$ form a cover of $F$, that is $F = G \cup B$.
+One problem still remains with the above setup - a single variable can be connected to any number of factors. As a further simplification, we can group the factors together based off their shared characteristics, which include their origin (if they are internal to the robot or not), their type (what kind of sensor they represent) and their intentions (whether they will help or hinder the robot). For our purposes, we will split the set of factors $F$, into sets $G$ and $B$ based off whether the factors are ``good'' or ``bad'' for the robot. Good factors aim to steer the variable towards the a ground truth value, while bad factors aim to steer it away. Notice that the sets $G$ and $B$ form a cover of $F$, that is $F = G \cup B$.
 
 We then take this a step further and replace each set of factors with a single ``representative factor''.
 \begin{figure}[!ht]
-    \centering
-    \input{diagrams/representative_factors.tikz}
+	\centering
+	\input{diagrams/representative_factors.tikz}
 
-    \caption[Representative factor graph around a single variable]{The above factor graph using ``representative factors''. $f_G$ and $f_B$ respectively represent the sets of good factors ($G$) and bad factors ($B$).}
+	\caption[Representative factor graph around a single variable]{The above factor graph using ``representative factors''. $f_G$ and $f_B$ respectively represent the sets of good factors ($G$) and bad factors ($B$).}
 \end{figure}
 
 We calculate the messages from each of these representative factors as such:
 \begin{eqnarray}
-    m_{f_G \rightarrow x_i} = \underset{g \in G}{\prod} m_{f_g \rightarrow x_i}&
-    m_{f_B \rightarrow x_i} = \underset{b \in B}{\prod} m_{f_b \rightarrow x_i}
+	m_{f_G \rightarrow x_i} = \underset{g \in G}{\prod} m_{f_g \rightarrow x_i}&
+	m_{f_B \rightarrow x_i} = \underset{b \in B}{\prod} m_{f_b \rightarrow x_i}
 \end{eqnarray}
 Thus the belief of the variable becomes $p(x) = m_{f_G \rightarrow x} m_{f_B \rightarrow x}$, and since $G \cup B$ covers every factor connected to the variable, we can show that this replacement can be made without altering the variable's final result by equation \ref{eqn:bp_belief}.
 
 \begin{equation}
-    p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
-    \tag{\ref{eqn:bp_belief}}
+	p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
+	\tag{\ref{eqn:bp_belief}}
 \end{equation}
 
 For completeness we now present the equations for contents of the messages $m_{f_G \rightarrow x_i}$ and $m_{f_B \rightarrow x_i}$. 
 Each message is has an information vector $\eta$ and a precision matrix $\Lambda$.
 \begin{eqnarray}
-    \eta_G = \underset{g \in G}{\sum} \eta_g&
-    \Lambda_G = \underset{g \in G}{\sum} \Lambda_g \label{eqn:good_pull}\\
-    \eta_B = \underset{b \in B}{\sum} \eta_b&
-    \Lambda_B = \underset{b \in B}{\sum} \Lambda_b \label{eqn:bad_pull}
+	\eta_G = \underset{g \in G}{\sum} \eta_g&
+	\Lambda_G = \underset{g \in G}{\sum} \Lambda_g \label{eqn:good_pull}\\
+	\eta_B = \underset{b \in B}{\sum} \eta_b&
+	\Lambda_B = \underset{b \in B}{\sum} \Lambda_b \label{eqn:bad_pull}
 \end{eqnarray}
 
 \section{Theoretical properties of the RobotWeb under attack}
 \subsection{Measuring the strength of an attack}
-From the above setup we will now aim to quantify the strength of an attack. 
-For mathematical convenience and ease of understanding, we will derive these equations in 1 dimension, and later present the n-dimensional forms.
+From the above setup we will now aim to quantify the strength of an attack. For mathematical convenience and ease of understanding, we will derive these equations in 1 dimension, and later present the n-dimensional forms.
 
-To measure the strength of an attack we want to understand the impact of the bad factors on the variable's final belief. 
-To do this we shall use the Kullback-Leibler (KL) divergence \citationneeded between the variable's belief when it is safe and when it is under attack.
-The KL divergence is a measure of far the distribution Q is from the distribution P. 
-The further the belief distribution under attack (BDA) is from the distribution suggested by the good factors, the stronger we say the attack is.
-Similarly, the closer the BDA is to the distribution suggested by the bad factors, the stronger the attack.
+To measure the strength of an attack we want to understand the impact of the bad factors on the variable's final belief. To do this we shall use the Kullback-Leibler (KL) divergence \citationneeded between the variable's belief when it is safe and when it is under attack.
+The KL divergence is a measure of far the distribution Q is from the distribution P. The further the belief distribution under attack (BDA) is from the distribution suggested by the good factors, the stronger we say the attack is. Similarly, the closer the BDA is to the distribution suggested by the bad factors, the stronger the attack.
 
 The KL divergence between 2 distributions of continuous random variables is:
 \begin{equation}
-    D_{KL}(P || Q) = \int_{-\infty}^{\infty} log\left( \frac{p(x)}{q(x)} \right) dx
+	D_{KL}(P || Q) = \int_{-\infty}^{\infty} log\left( \frac{p(x)}{q(x)} \right) dx
 \end{equation}
 
 However a special case exists for Normal distributions, $N_1(\mu_1, \sigma_1^2)$ and $N_2(\mu_2, \sigma_2^2)$.
 \begin{equation}
-    D_{KL}(N_1 || N_2) = log\left(\frac{\sigma_2}{\sigma_1}\right) + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+	D_{KL}(N_1 || N_2) = log\left(\frac{\sigma_2}{\sigma_1}\right) + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
 \end{equation}
 
 In 1 dimension the messages sent from $f_G$ and $f_B$ are:
 \begin{eqnarray}
-    m_{f_G \rightarrow x_i} = (\eta_G, \Lambda_G) = (\frac{\mg}{\sgsq}, \frac{1}{\sgsq})\\
-    m_{f_B \rightarrow x_i} = (\eta_B, \Lambda_B) = (\frac{\mb}{\sbsq}, \frac{1}{\sbsq}) \label{eqn:attacker_msg}
+	m_{f_G \rightarrow x_i} = (\eta_G, \Lambda_G) = (\frac{\mg}{\sgsq}, \frac{1}{\sgsq})\\
+	m_{f_B \rightarrow x_i} = (\eta_B, \Lambda_B) = (\frac{\mb}{\sbsq}, \frac{1}{\sbsq}) \label{eqn:attacker_msg}
 \end{eqnarray}
 
 From \ref{eqn:bp_belief} we see that the BDA is equal to:
 \begin{align}
-    m_{f_G \rightarrow x} m_{f_B \rightarrow x} 
-    &= (\eta_G + \eta_B, \Lambda_G + \Lambda_B)\\
-    &= \left(\frac{\mg}{\sgsq} + \frac{\mb}{\sbsq}, \frac{1}{\sgsq} + \frac{1}{\sbsq}\right)\\
-    &= \left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq \sbsq}, \frac{\sbsq + \sgsq}{\sgsq \sbsq}\right)
+	m_{f_G \rightarrow x} m_{f_B \rightarrow x} 
+	&= (\eta_G + \eta_B, \Lambda_G + \Lambda_B)\\
+	&= \left(\frac{\mg}{\sgsq} + \frac{\mb}{\sbsq}, \frac{1}{\sgsq} + \frac{1}{\sbsq}\right)\\
+	&= \left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq \sbsq}, \frac{\sbsq + \sgsq}{\sgsq \sbsq}\right)
 \end{align}
 
 The above distributions follow the following Normal distributions:
 \begin{align}
-    G &\sim N\left(\frac{\eta_G}{\Lambda_G}, \frac{1}{\Lambda_G}\right)\\
-    B &\sim N\left(\frac{\eta_B}{\Lambda_B}, \frac{1}{\Lambda_B}\right)\\
-    BDA &\sim N\left(\mu_{BDA}, \sigma_{BDA}^2\right)\\
-    &\sim N\left(\frac{\eta_G + \eta_B}{\Lambda_G + \Lambda_B}, \frac{1}{\Lambda_G + \Lambda_B}\right)\\
-    &\sim N\left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}, \frac{\sgsq \sbsq}{\sgsq + \sbsq}\right) \label{eqn:bda_distribution}
+	G &\sim N\left(\frac{\eta_G}{\Lambda_G}, \frac{1}{\Lambda_G}\right)\\
+	B &\sim N\left(\frac{\eta_B}{\Lambda_B}, \frac{1}{\Lambda_B}\right)\\
+	BDA &\sim N\left(\mu_{BDA}, \sigma_{BDA}^2\right)\\
+	&\sim N\left(\frac{\eta_G + \eta_B}{\Lambda_G + \Lambda_B}, \frac{1}{\Lambda_G + \Lambda_B}\right)\\
+	&\sim N\left(\frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}, \frac{\sgsq \sbsq}{\sgsq + \sbsq}\right) \label{eqn:bda_distribution}
 \end{align}
 
 So now we take the KL divergence between the good factors' distribution $G$ and BDA. To make this easier to follow we derive each term in the sum separately.
 
 First deriving the log term we get:
 \begin{align}
-    log\left(\frac{\sigma_{BDA}}{\sigma_{G}}\right)
-    &= log\left(\sqrt[2]{\frac{\sigma_{BDA}^2}{\sigma_{G}^2}}\right)\\
-    &= \frac{1}{2} log\left(\frac{\sigma_{BDA}^2}{\sigma_{G}^2}\right)\\
-    &= \frac{1}{2} log\left(\frac{\sgsq \sbsq}{\sbsq + \sgsq} \times \frac{1}{\sgsq}\right)\\
-    &= \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right)
+	log\left(\frac{\sigma_{BDA}}{\sigma_{G}}\right)
+	&= log\left(\sqrt[2]{\frac{\sigma_{BDA}^2}{\sigma_{G}^2}}\right)\\
+	&= \frac{1}{2} log\left(\frac{\sigma_{BDA}^2}{\sigma_{G}^2}\right)\\
+	&= \frac{1}{2} log\left(\frac{\sgsq \sbsq}{\sbsq + \sgsq} \times \frac{1}{\sgsq}\right)\\
+	&= \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right)
 \end{align}
 
 Next we derive the fractional term:
 \begin{align}
-    \frac{\sigma_{G}^2 + (\mu_{G} - \mu_{BDA})^2}{2\sigma_{BDA}^2}
-    &= \frac{
-            \sgsq + \left(\mg - \frac{\mg\sbsq + \mb\sgsq}{\sbsq + \sgsq}\right)^2
-        }{
-            2 \frac{\sgsq \sbsq}{\sbsq + \sgsq}
-        }\\
-    &= \left(\sgsq + \left(\frac{\mg\sgsq + \mg\sbsq - \mg\sbsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
-    &= \left(\sgsq + \left(\frac{\mg\sgsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
-    &= \frac{\sgsq\left(\sgsq + \sbsq\right)^2  + \left(\mg\sgsq - \mb\sgsq\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
-    &= \frac{\sgsq\left(\sgsq + \sbsq\right)^2  + \sigma_G^4\left(\mg - \mb\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
-    &= \frac{\left(\sgsq + \sbsq\right)^2  + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)}
+	\frac{\sigma_{G}^2 + (\mu_{G} - \mu_{BDA})^2}{2\sigma_{BDA}^2}
+	&= \frac{
+			\sgsq + \left(\mg - \frac{\mg\sbsq + \mb\sgsq}{\sbsq + \sgsq}\right)^2
+		}{
+			2 \frac{\sgsq \sbsq}{\sbsq + \sgsq}
+		}\\
+	&= \left(\sgsq + \left(\frac{\mg\sgsq + \mg\sbsq - \mg\sbsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+	&= \left(\sgsq + \left(\frac{\mg\sgsq - \mb\sgsq}{\sbsq + \sgsq}\right)^2\right) \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+	&= \frac{\sgsq\left(\sgsq + \sbsq\right)^2 + \left(\mg\sgsq - \mb\sgsq\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+	&= \frac{\sgsq\left(\sgsq + \sbsq\right)^2 + \sigma_G^4\left(\mg - \mb\right)^2}{(\sbsq + \sgsq)^2} \times \frac{\sbsq + \sgsq}{2\sgsq\sbsq}\\
+	&= \frac{\left(\sgsq + \sbsq\right)^2 + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)}
 \end{align}
 
 Thus the KL divergence between $G$ and BDA is:
 \begin{equation}
-    \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2  + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)} - \frac{1}{2}
+	\frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2 + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)} - \frac{1}{2}
 \end{equation}
 
 Similarly the KL divergence between $B$ and BDA is:
 \begin{equation}
-    \frac{1}{2} log\left(\frac{\sgsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2  + \sbsq\left(\mg - \mb\right)^2}{2\sgsq(\sbsq + \sgsq)} - \frac{1}{2}
+	\frac{1}{2} log\left(\frac{\sgsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2 + \sbsq\left(\mg - \mb\right)^2}{2\sgsq(\sbsq + \sgsq)} - \frac{1}{2}
 \end{equation}
 
-From this we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. 
-This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. That an attacker can always command a robot to reject the evidence of its own peers and sensors. 
-That the attacker can always craft messages to trick a robot into believing absurdities about its location.
+From this we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. That an attacker can always command a robot to reject the evidence of its own peers and sensors. That the attacker can always craft messages to trick a robot into believing absurdities about its location.
 
 \subsection{Crafting the perfect message}
-From the results derived in the previous section, we know that theoretically an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. 
-However, in a real life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
+From the results derived in the previous section, we know that theoretically an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. However, in a real life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
 \begin{enumerate}
-    \item Robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
-    \item Robots don't have infinite numerical precision, so large values of $\Lambda_B$ ($\frac{1}{\sbsq}$) would cause overflow errors, which would prevent the attacker from controlling the robot's belief.
+	\item Robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
+	\item Robots don't have infinite numerical precision, so large values of $\Lambda_B$ ($\frac{1}{\sbsq}$) would cause overflow errors, which would prevent the attacker from controlling the robot's belief.
 \end{enumerate}
 
 Given these restrictions, attackers would set their values of $\mb$ to believable values, whilst choosing the largest value of $\sbsq$ possible. 
@@ -179,49 +161,40 @@ As before, the attacker sends a message with the form described in equation \ref
 
 So from equation \ref{eqn:bda_distribution}, we see that:
 \begin{equation}
-    \mt = \frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}
+	\mt = \frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}
 \end{equation}
 
 Which can be rearranged to the form:
 \begin{equation}
-    \mb = \frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq}
+	\mb = \frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq}
 \end{equation}
 
 Which can be used to calculate the $\mb$ that an attacker would send given a minimum $\sbsq$. 
 Thus the attacker would send the following message:
 \begin{equation}
-    \left(\frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq\sbsq}, \frac{1}{\sbsq}\right)
+	\left(\frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq\sbsq}, \frac{1}{\sbsq}\right)
 \end{equation}
 
 \subsection{Scaling back up to n-dimensional space}
 \todo{TODO: Derive this}
 
 \section{Hypotheses}
-In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. 
-These hypotheses will then be experimentally tested in the next section.
+In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. These hypotheses will then be experimentally tested in the next section.
 
 \subsection{Bounds on $\mu$ can be slowly escaped} % frog slowly boiling in pot
 An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its previous position. 
-However, we believe that this approach is ineffective, and can be easily evaded by attackers. 
-In this subsection, we will lay out how this defence would work and how it can be bypassed.
+However, we believe that this approach is ineffective, and can be easily evaded by attackers. In this subsection, we will lay out how this defence would work and how it can be bypassed.
 
-For the upper bound to be effective, it must occupy a ``Goldilocks zone'' - it cannot be too large or too small. 
-If the upper bound is too large, it would present attackers with ample opportunities to control the robot's belief, especially since they aim to suggest somewhat plausible positions.
+For the upper bound to be effective, it must occupy a ``Goldilocks zone'' - it cannot be too large or too small. If the upper bound is too large, it would present attackers with ample opportunities to control the robot's belief, especially since they aim to suggest somewhat plausible positions.
 If the upper bound is too small, it would effectively prevent the robot from listening to any dissenting messages from other good robots.
 
-Now suppose that at time $t$, the robot is at position $\mu_t$ and has a upper bound of $\epsilon$. 
-It would then evaluate each incoming message and reject it if its proposed position $\mu'_t$ is a distance $\epsilon$ away from $\mu_t$. 
-After filtering out all ``bad'' messages, the robot would use the remaining messages to determine $\mu_{t+1}$. 
+Now suppose that at time $t$, the robot is at position $\mu_t$ and has a upper bound of $\epsilon$. It would then evaluate each incoming message and reject it if its proposed position $\mu'_t$ is a distance $\epsilon$ away from $\mu_t$. After filtering out all ``bad'' messages, the robot would use the remaining messages to determine $\mu_{t+1}$. 
 
-Being aware of this scheme, and attacker would seek to incrementally attack the robot.
-It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. 
-This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. 
-In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$.
-Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
+Being aware of this scheme, and attacker would seek to incrementally attack the robot. It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$. Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
 \todo{Would a diagram be useful here?}
 
 \subsection{Bounds on $\Lambda$ can be quickly escaped}
-As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. Which leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$  values that they receive. We believe that this strategy is effective when there is only a single identity spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
+As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. Which leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$ values that they receive. We believe that this strategy is effective when there is only a single identity spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
 
 The $\Lambda$ value of a message can be though of as its ``pull'', or how strongly the message would move a variable towards its proposed location. The greater the value, the stronger the pull. \todo{Norms?} With this in mind, we can think of the robot's location estimate as being ``pulled'' by good and bad factors, where good factors pull the estimate towards a ground truth, whilst bad factors pull it to an alternate location. 
 
