@@ -25,19 +25,19 @@ In addition to centralised and decentralised schemes, multi-robot systems may al
 \section{Robot Web}
 This thesis seeks to build upon the work done in ``A Robot Web for Distributed Many-Device Localisation'' \cite{Robotweb}, which describes a method for \textit{heterogeneous} robots in a \textit{decentralised} multi-robot system to \textit{collaborate} via \textit{explicit communication} to localise \textit{dynamically}.
 
-Robots in the Robot Web move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the Robot Web by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
+Robots in the RobotWeb move along predefined paths, estimating their location via internal odometry. When a robot senses another, it communicates its measurement to the other robot, and then both robots use the measurement to update their location estimates. Since we live in an imperfect world, each sensor measurement carries with it a small amount of noise, which is reflected in the RobotWeb by a degree of uncertainty attached to each robot's location estimate and represented by a Gaussian distribution.
 
-This section will introduce the reader to the core concepts used in the Robot Web and assemble them to provide the reader with an understanding of how the Robot Web functions and some of its limitations.
+This section will introduce the reader to the core concepts used in the RobotWeb and assemble them to provide the reader with an understanding of how the RobotWeb functions and some of its limitations.
 
 \subsection{Factor Graphs} 
 \unsure{Do I need a citation for this? I'm making up the example afaik}
-A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
+A factor graph is a diagrammatic method used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
 
 \begin{equation}
 p(X) = \underset{i}{\prod} f_i(X_i)
 \end{equation}
 
-The nodes of a factor graph can either represent variables ($X_i$) or factors ($f_i$). There are several different ways to draw factor graphs, but we will use the one defined in \cite{FactorGraphDrawingFormat}, where factors are drawn as squares and variables are drawn as circles.
+Each node in a factor graph either represents a variable ($X_i$) or a factor ($f_i$). A variable carries knowledge about a real world entity, whilst a factor represents the relationship between many variables. There are several different ways to draw factor graphs, but we will use the one defined in \cite{FactorGraphDrawingFormat}, where factors are drawn as squares and variables are drawn as circles.
 
 \begin{figure}[!h]
     \centering
@@ -83,7 +83,7 @@ Similarly, if we wanted to find the probability that $X_2 = z$ for some z we wou
 
 Noticing how the sum over $X_3$ in both \ref{eqn:x1} and \ref{eqn:x2} is the same, we may want to ``cache'' the result when dealing with large factor graphs, to improve performance. To do this we can associate calculations with nodes in the factor graph. We call these associations ``messages''.
 
-The general form of a message from variable $i$ to factor $j$ is the product of the messages from all other neighbouring factors \cite{GaussianBP}. Put formally:
+The general form of a message from variable $i$ to factor $j$ is the product of the messages from all other neighbouring factors \cite{GaussianBP}. Formally:
 
 \begin{equation}
     m_{x_i \rightarrow f_j} = \underset{s \in N(i) \backslash j }{\prod} m_{f_s \rightarrow x_i}
@@ -97,7 +97,7 @@ The general form of a message from factor $j$ to variable $i$ is the product of 
     \label{eqn:f_v}
 \end{equation}
 
-Finally, the marginal value of a variable is simply the product of all incoming messages to it \cite{GaussianBP}.
+Finally, the marginal value (belief) of a variable is simply the product of all incoming messages to it \cite{GaussianBP}.
 
 \begin{equation}
     p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
@@ -126,7 +126,7 @@ The canonical form uses an \textit{information vector} ($\eta$) and a \textit{pr
     \eta = \Sigma^{-1} \mu && \Lambda = \Sigma^{-1}
 \end{align*}
 
-where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
+where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is sparse \cite{GaussianBP}.
 
 \unsure{Should I add equations for gbp?}
 
@@ -158,6 +158,7 @@ The Robot Web further improves the accuracy of robots' locations by allowing rob
     \caption[Robot Web factor graph]{An example of a factor graph in the Robot Web. Each robot's variables are connected by odometry factors. At times $t_1$ and $t_2$, both robots sense each other, and so exchange measurements by creating inter-robot-measurement factors on the graph.}
 \end{figure}
 
+%TODO - the real reason for lie groups is to nicely apply gaussians
 The Robot Web represents the locations and sensor measurements of all robots using general Lie groups, rather than any specific group. This has the consequence that any type of sensor or robot can be a part of the Robot Web. For example, a drone moving in 3D space can interact with a car moving on a plane.
 
 \subsection{Evaluation}
@@ -174,7 +175,7 @@ Furthermore, the Robot Web has proven to be robust to a large number of faulty i
 Although the Robot Web is robust to many inter-robot sensors reporting random measurements, it is not robust to a bad actor which may instead report incorrect measurements designed to worsen the localisation of other members of the Robot Web. Possible attacks include but are not limited to:
 
 \begin{enumerate}
-    \item Sending messages with extremely low standard deviations, to lull others into a false sense of security.
+    \item Sending messages with extremely high confidences, to lull others into a false sense of security.
     \item Sending these messages whilst assuming the identity of another robot.
     \item Sending these messages from many nonexistent robots, also known as a Sybil attack.
 \end{enumerate}
@@ -183,7 +184,7 @@ Although the Robot Web is robust to many inter-robot sensors reporting random me
 In this section, we will discuss several general security issues that can arise in robot networks. We will focus on issues that affect the accuracy of a robot's internal model of the world. This excludes attacks which may result in an attacker gaining control over a robot, yet includes attacks performed by hijacked robots.
 
 \subsection{Denial of Service} % Can go into more detail if necessary.
-A denial of service attack seeks to deny service. In a robot network such as the Robot Web, this would prevent one or more robots from being able to access messages sent by their peers, and essentially cut them off from the network.
+A denial of service attack seeks to deny service. In a robot network such as the Robot Web, this would prevent one or more robots from being able to access messages sent by their peers and essentially cut them off from the network.
 
 The simplest way for an attacker to perform a DoS attack is to use a signal jammer, which can be constructed using off-the-shelf equipment \cite{SignalJamming}. This would continuously transmit signals within the range of frequencies allowed by the communication medium, both interfering with and irrecoverably corrupting any messages sent. More sophisticated attackers may craft harder-to-detect jammer attacks by mimicking legitimate messages or only transmitting when it senses communication \cite{SignalJamming}. In addition to these, there exist a whole host of jamming attacks (and defences) targetting specific communication protocols.
 

@@ -1,20 +1,23 @@
-\chapter{An Investigation into the Security of RobotWeb}
-This chapter will investigate the behaviour of the RobotWeb when it is under attack. We will start by definining the expected behaviour of an attacker, including its incentives to attack. From then, we will construct and examine a simplified version of the RobotWeb to determine how victims of an attack will behave. Finally, we present and test several hypotheses about the behaviour of the RobotWeb under attack.
+\chapter{An Investigation into the Security of the RobotWeb}
+In this chapter, we investigate the behaviour of the RobotWeb under attack. We start by discussing the reasons why an attacker would choose to attack the RobotWeb, using these to predict the aims of an ideal attacker. From then, we derive a mathematical expression to describe the potency of any given attack. Finally, we use this expression to form and test 5 hypotheses about the behaviour of the RobotWeb under attack.
 
-\section{The behaviour of an ideal attacker}
-In order to predict the nature of an attacker's behaviour, we must first understand how normal robots behave in the RobotWeb. At all times, a robot will have a noisy estimate of its current position, as it moves the associated noise will grow. When robot $r_1$ encounters another $r_2$, it measures it and creates a factor between its own and $r_2$'s current pose variable. Both robots will then exchange messages to each other over the factor, both using the messages to improve their own location estimates and decrease their uncertainty. In addition to other robots, a robot may measure a fixed beacon, which once again creates a factor between them, however, here only the robot will update its position estimate, as the beacon does not move. The quality of all sent message is dependent on the sender's own position accuracy and the accuracy of its sensors.
+\section{An ideal attacker}
+For us to predict the nature of an attacker's behaviour, we must first understand how normal robots behave. A robot always has an estimate of its current position, albeit with some uncertainty, which grows as the robot moves. When the robot moves, it updates its position by combining its past positions with data from its motion sensors, in a process known as odometry.
+
+% Maybe use words instead of numbers?
+When one robot $r_1$ encounters another $r_2$, it measures it and creates a factor between its own and $r_2$'s current pose variable. A robot may also encounter a fixed beacon, like a ship encountering a lighthouse. When this happens, the robot will once again create a factor between its and the beacon's current pose variable. After the measurements have been made, each robot will perform several iterations of Gaussian Belief Propagation, to update its position estimates.
 
 An attacker can take the form of either another robot or a beacon in the RobotWeb. Regardless of the form taken by the attacker, its goal would be to control the other robots' position estimates, by sending specially crafted messages.
 
-All robots require a method to localise themselves as part of their normal operations, even attackers. Normal robots use the RobotWeb to do this, while we have no guarantees on the methods that potential attackers may use. An attacker may use an external system for localisation, or even a private RobotWeb, which renders it impervious to any consequences for its actions. However, some attackers may instead choose to participate in the RobotWeb in order to avoid the complexity of using an alternative system. Participating attackers would then have incentive to partially preserve the RobotWeb as they themselves are dependent on it. This dependency is likely cause attackers to only attack a small subset of robots, or only attack robots for a small amount of time. 
+All robots require a method to localise themselves as part of their normal operations, even attackers. Normal robots use the RobotWeb to do this, while we have no guarantees on the methods that potential attackers may use. An attacker may use an external system for localisation, or even a private RobotWeb, which renders it impervious to any consequences for its actions. However, some attackers may instead choose to participate in the RobotWeb in order to avoid the complexity of using an alternative system. Participating attackers would then have an incentive to partially preserve the RobotWeb as they themselves are dependent on it. This dependency is likely to cause attackers to only attack a small subset of robots, or only attack robots for a small amount of time. 
 
-It is self-evident that all attackers would seek to be effective i.e. thier attacks should have a high chance of working especially when no defences are present. In seeking effectiveness in the face of defences, attackers should not want their attacks to be easily identified, as identified attacks can be easily defended against. Thus it stands to reason that attacks are likely to be subtly executed, such that their victims would be able to believe them. For example, an attack that suggests that a small robot has moved 10km in 5s is guaranteed to fail.
+It is self-evident that all attackers would seek to be effective i.e. their attacks should have a high chance of working especially when no defences are present. In seeking effectiveness in the face of defences, attackers should not want their attacks to be easily identified, as identified attacks can be easily defended against. Thus it stands to reason that attacks are likely to be subtly executed, such that their victims would be able to believe them. For example, an attack that suggests that a small robot has moved 10km in 5s is guaranteed to fail.
 
-Finally, in the event that multiple attackers are present in the environment, they would do best to collaborate rather than compete, as it would raise the effectiveness of them all. Since competing attackers are less effective than collaborating attackers, we shall spend less time considering them.
+Finally, if multiple attackers are present in the environment, it would be best for them to collaborate rather than compete, as it would raise their overall effectiveness. Since competing attackers are less effective than collaborating attackers, we shall spend less time considering them.
 
 \section{A simplified system}
 Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph. However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them. Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other.
-In the face of this complexity, it becomes clear that a simplification is needed.
+In the face of this complexity, it becomes clear that simplification is needed.
 
 To start, we choose to limit our investigation to a single variable, chosen arbitrarily, in the factor graph. Fortunately, the properties of Belief Propagation allow us to reason about this variable without loss of generality. Equation \ref{eqn:bp_belief} shows that the belief of a given variable is solely dependent on its connected factors. 
 
@@ -25,7 +28,7 @@ To start, we choose to limit our investigation to a single variable, chosen arbi
 	\caption[Single Variable in a Factor Graph]{A single variable connected to a number of factors}
 \end{figure}
 
-One problem still remains with the above setup - a single variable can be connected to any number of factors. As a further simplification, we can group the factors together based off their shared characteristics, which include their origin (if they are internal to the robot or not), their type (what kind of sensor they represent) and their intentions (whether they will help or hinder the robot). For our purposes, we will split the set of factors $F$, into sets $G$ and $B$ based off whether the factors are ``good'' or ``bad'' for the robot. Good factors aim to steer the variable towards the a ground truth value, while bad factors aim to steer it away. Notice that the sets $G$ and $B$ form a cover of $F$, that is $F = G \cup B$.
+One problem remains with the above setup - a single variable can be connected to any number of factors. To further simplify this, we can group the factors together based on their shared characteristics, which include their origin (if they are internal to the robot or not), their type (what kind of sensor they represent) and their intentions (whether they will help or hinder the robot). For our purposes, we will split the set of factors $F$, into sets $G$ and $B$ based on whether the factors are ``good'' or ``bad'' for the robot. Good factors aim to steer the variable towards a ground truth value, while bad factors aim to steer it away. Notice that the sets $G$ and $B$ form a cover of $F$, that is $F = G \cup B$.
 
 We then take this a step further and replace each set of factors with a single ``representative factor''.
 \begin{figure}[!ht]
@@ -47,8 +50,8 @@ Thus the belief of the variable becomes $p(x) = m_{f_G \rightarrow x} m_{f_B \ri
 	\tag{\ref{eqn:bp_belief}}
 \end{equation}
 
-For completeness we now present the equations for contents of the messages $m_{f_G \rightarrow x_i}$ and $m_{f_B \rightarrow x_i}$. 
-Each message is has an information vector $\eta$ and a precision matrix $\Lambda$.
+For completeness, we now present the equations for contents of the messages $m_{f_G \rightarrow x_i}$ and $m_{f_B \rightarrow x_i}$. 
+Each message has an information vector $\eta$ and a precision matrix $\Lambda$.
 \begin{eqnarray}
 	\eta_G = \underset{g \in G}{\sum} \eta_g&
 	\Lambda_G = \underset{g \in G}{\sum} \Lambda_g \label{eqn:good_pull}\\
@@ -58,7 +61,7 @@ Each message is has an information vector $\eta$ and a precision matrix $\Lambda
 
 \section{Theoretical properties of the RobotWeb under attack}
 \subsection{Measuring the strength of an attack}
-From the above setup we will now aim to quantify the strength of an attack. For mathematical convenience and ease of understanding, we will derive these equations in 1 dimension, and later present the n-dimensional forms.
+From the above setup, we will now aim to quantify the strength of an attack. For mathematical convenience and ease of understanding, we will derive these equations in 1 dimension, and later present the n-dimensional forms.
 
 To measure the strength of an attack we want to understand the impact of the bad factors on the variable's final belief. To do this we shall use the Kullback-Leibler (KL) divergence \citationneeded between the variable's belief when it is safe and when it is under attack.
 The KL divergence is a measure of far the distribution Q is from the distribution P. The further the belief distribution under attack (BDA) is from the distribution suggested by the good factors, the stronger we say the attack is. Similarly, the closer the BDA is to the distribution suggested by the bad factors, the stronger the attack.
@@ -107,7 +110,7 @@ First deriving the log term we get:
 	&= \frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right)
 \end{align}
 
-Next we derive the fractional term:
+Next, we derive the fractional term:
 \begin{align}
 	\frac{\sigma_{G}^2 + (\mu_{G} - \mu_{BDA})^2}{2\sigma_{BDA}^2}
 	&= \frac{
@@ -127,15 +130,15 @@ Thus the KL divergence between $G$ and BDA is:
 	\frac{1}{2} log\left(\frac{\sbsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2 + \sgsq\left(\mg - \mb\right)^2}{2\sbsq(\sbsq + \sgsq)} - \frac{1}{2}
 \end{equation}
 
-Similarly the KL divergence between $B$ and BDA is:
+Similarly, the KL divergence between $B$ and BDA is:
 \begin{equation}
 	\frac{1}{2} log\left(\frac{\sgsq}{\sbsq + \sgsq}\right) + \frac{\left(\sgsq + \sbsq\right)^2 + \sbsq\left(\mg - \mb\right)^2}{2\sgsq(\sbsq + \sgsq)} - \frac{1}{2}
 \end{equation}
 
-From this we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. That an attacker can always command a robot to reject the evidence of its own peers and sensors. That the attacker can always craft messages to trick a robot into believing absurdities about its location.
+From this, we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. This means that the attacker can convince other robots of any position that it chooses, so long as it displays a high enough confidence.
 
 \subsection{Crafting the perfect message}
-From the results derived in the previous section, we know that theoretically an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. However, in a real life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
+From the results derived in the previous section, we know theoretically that an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. However, in a real-life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
 \begin{enumerate}
 	\item Robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
 	\item Robots don't have infinite numerical precision, so large values of $\Lambda_B$ ($\frac{1}{\sbsq}$) would cause overflow errors, which would prevent the attacker from controlling the robot's belief.
@@ -150,11 +153,12 @@ So from equation \ref{eqn:bda_distribution}, we see that:
 	\mt = \frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}
 \end{equation}
 
-Which can be rearranged to the form:
+Which can be rearranged into the form:
 \begin{equation}
 	\mb = \frac{\mt\left(\sgsq + \sbsq\right) - \mg\sbsq}{\sgsq}
 \end{equation}
 
+%todoThis doesn't look right, I think I should be finding $\sbsq$ and $\mb$, or at least some relationship between them. For example as you move $\mb$ further away, you can increase $\sbsq$
 Which can be used to calculate the $\mb$ that an attacker would send given a minimum $\sbsq$. 
 Thus the attacker would send the following message:
 \begin{equation}
@@ -168,39 +172,39 @@ Thus the attacker would send the following message:
 In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. These hypotheses will then be experimentally tested in the next section.
 
 \subsection{Bounds on $\mu$ can be slowly escaped} % frog slowly boiling in pot
-An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its previous position. 
+An intuitive way of defending against attackers is to set an upper bound on how far a message can suggest the robot is from its previous position. 
 However, we believe that this approach is ineffective, and can be easily evaded by attackers. In this subsection, we will lay out how this defence would work and how it can be bypassed.
 
 For the upper bound to be effective, it must occupy a ``Goldilocks zone'' - it cannot be too large or too small. If the upper bound is too large, it would present attackers with ample opportunities to control the robot's belief, especially since they aim to suggest somewhat plausible positions.
 If the upper bound is too small, it would effectively prevent the robot from listening to any dissenting messages from other good robots.
 
-Now suppose that at time $t$, the robot is at position $\mu_t$ and has a upper bound of $\epsilon$. It would then evaluate each incoming message and reject it if its proposed position $\mu'_t$ is a distance $\epsilon$ away from $\mu_t$. After filtering out all ``bad'' messages, the robot would use the remaining messages to determine $\mu_{t+1}$. 
+Now suppose that at time $t$, the robot is at position $\mu_t$ and has an upper bound of $\epsilon$. It would then evaluate each incoming message and reject it if its proposed position $\mu'_t$ is a distance $\epsilon$ away from $\mu_t$. After filtering out all ``bad'' messages, the robot would use the remaining messages to determine $\mu_{t+1}$. 
 
-Being aware of this scheme, and attacker would seek to incrementally attack the robot. It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$. Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
+Being aware of this scheme, an attacker would seek to incrementally attack the robot. It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$. Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
 \todo{Would a diagram be useful here?}
 
 \subsection{Bounds on $\Lambda$ can be quickly escaped}
-As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. Which leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$ values that they receive. We believe that this strategy is effective when there is only a single identity spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
+As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. This leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$ values that they receive. We believe that this strategy is effective when there are only a few \textit{identities} spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
 
-The $\Lambda$ value of a message can be though of as its ``pull'', or how strongly the message would move a variable towards its proposed location. The greater the value, the stronger the pull. \todo{Norms?} With this in mind, we can think of the robot's location estimate as being ``pulled'' by good and bad factors, where good factors pull the estimate towards a ground truth, whilst bad factors pull it to an alternate location. 
+The $\Lambda$ value of a message can be thought of as its ``pull'', or how strongly the message would move a variable towards its proposed location. The greater the value, the stronger the pull. \todo{Norms?} With this in mind, we can think of the robot's location estimate as being ``pulled'' by good and bad factors, where good factors pull the estimate towards a ground truth, whilst bad factors pull it to some alternate location. 
 
-When sending a message, each robot decides the strength of the message's pull. Good robots limit their strength to the accuracy of their sensors, while attackers will set their strength to the fullest extent. This once again makes the case for the use of a reasonable upper bound on the strength of a message, similar to the one described above.
+When sending a message, each robot decides how strongly it wants to pull. Good robots limit their strength to the accuracy of their sensors, while attackers will set their strength to the fullest extent. This once again makes the case for the use of a reasonable upper bound on the strength of a message, similar to the one described above.
 
 We argue that this upper bound is unenforceable in practice, for an attacker can simply ``split'' their message into several weaker parts. So far in our analysis, we have treated $\Lambda_B$ as if it were sent in a single message, however from equation \ref{eqn:bad_pull} we can see that it may also be the result of several bad robots sending messages. In fact, if the upper bound on an individual message's $\Lambda$ is $\lambda$, then an attacker could simply send several messages from several different identities to arrive at a strong $\Lambda_B$, in a Sybil Attack. \todo{Should I add maths here too?}
 \subsubsection{Aside: Attacks are uncorrelated}
-Considering the ``pull based model'' of variables, it stands to reason that in a Sybil Attack, the messages sent by individual identities will not be correlated with each other, as that would greatly simplify the detection and prevention of attacks. Instead, we believe that Sybil Attackers would send messages with wildly different $\mu$ values, that would ``resolve'' to the actual attack that the attacker intends.
+Considering the ``pull-based model'' of variables, it stands to reason that in a Sybil Attack, the messages sent by individual identities will not be correlated with each other, as that would greatly simplify the detection and prevention of attacks. Instead, we believe that Sybil Attackers would send messages with wildly different $\mu$ values, that when combined, form the attacker's intended attack.
 
 \subsection{Long histories are detrimental} % History can be weaponised
 One little discussed feature of the RobotWeb so far has been its time-windowed history. Instead of remembering every past position that that robot has had, it instead chooses to only remember the past $h$ positions. This improves the performance of robots in the RobotWeb, as they store fewer pose variables and thus perform fewer floating-point operations when updating beliefs. In the original paper, Murai et al. show that the impact of time-windowed history on the average trajectory error of each robot is negligible.
 
 \todo{Add graph}
 
-We believe that keeping the full position history not only has an adverse impact on the compuational performance of a robot, but also amplifies the strength of attacks. If an attacker is able to successfully attack a robot at time $t$, then the pose variable at $t$, $v_t$ will contain a $\mu$ close to the attacker's target $\mu$, and its $\Lambda$ will be high. If $v_t$ is then used to estimate the robot's position at time $t+1$, then it will effectively also attack the robot, as it would further the attacker's belief. The longer the history kept by a robot, the more power an attacker can gain over it.
+We believe that keeping the full position history not only has an adverse impact on the computational performance of a robot but also amplifies the strength of attacks. If an attacker can successfully attack a robot at time $t$, then the pose variable at $t$, $v_t$ will contain a $\mu$ close to the attacker's target $\mu$, and its $\Lambda$ will be high. If $v_t$ is then used to estimate the robot's position at time $t+1$, then it will effectively also attack the robot, as it would further the attacker's belief. The longer the history kept by a robot, the more power an attacker can gain over it.
 
 \subsection{Attacks can spread on their own} % A falling tide sinks all ships/Can't let the genie out of the bottle
 Similarly to the previous hypothesis, we can assume that any other variable connected to $v_t$ will be attacked by it. Thus a victim of an attack will unintentionally attack all those it contacts, meaning that attacks have a degree of contagion. 
 
-Attackers may not be able to prevent or limit contagion, as they would need to strongly pull unintentional victims back to a ground truth value. Since no robot has absolute certainty about the locations of any other, the attacker will actually pull them to values close to their ground truth. However, as there is no mechanism to increase $\Lambda$, the attacker will still make the other robots overconfident about their locations, which may bias them in the long term.
+Attackers may not be able to prevent or limit contagion, as they would need to strongly pull unintentional victims back to a ground truth value. Since no robot has absolute certainty about the locations of any other, the attacker will pull them to values close to their ground truth. However, as there is no mechanism to increase $\Lambda$, the attacker will still make the other robots overconfident about their locations, which may bias them in the long term.
 \subsection{Robots are most vulnerable on startup}
 Our final hypothesis is that robots that have just started up are likely to be the most affected by attacks, as they wouldn't have a strong estimate of their location. This would mean that their $\Lambda_G$ is much lower than older robots, increasing the strength of the attack.
 
@@ -208,7 +212,7 @@ Our final hypothesis is that robots that have just started up are likely to be t
 \subsection{Experimental setup}
 We will test our hypotheses in a simulated environment, running the RobotWeb. Each robot, including the attacker, will travel along a predefined path. They will all carry a single \textbf{range-bearing} sensor which would measure the distance and bearing between the robot and what it has measured. All attackers will share a common target path, which they will aim to place their victims on.
 
-In order to link the experimental setup with a real-world application, we will consider the following task. There are several patrol robots patrolling a grid, however a subset of these robots are attackers, which aim to prevent their victims discovering a part of the environment. To do this, they will attack all normal robots in the vicinity of the special zone. Normal robots will only communicate with others if they have sensed them, whilst attackers may seek to also communicate with robots that they have not sensed.
+To link the experimental setup with a real-world application, we will consider the following task. Several patrol robots are patrolling a grid, however, a subset of these robots are attackers, which aim to prevent their victims from discovering a part of the environment. To do this, they will attack all normal robots in the vicinity of the special zone. Normal robots will only communicate with others if they have sensed them, whilst attackers may seek to also communicate with robots that they have not sensed.
 
 \subsection{Testing hypothesis 1}
 \subsection{Testing hypothesis 2}
