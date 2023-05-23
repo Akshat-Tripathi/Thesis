@@ -167,7 +167,7 @@ Thus the attacker would send the following message:
 \section{Hypotheses}
 In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. These hypotheses will then be experimentally tested in the next section.
 
-\subsection{Bounds on $\mu$ can be slowly escaped} % frog slowly boiling in pot
+\subsection{Bounds on $\mu$ can be slowly escaped} \label{hyp:1}
 An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its previous position. 
 However, we believe that this approach is ineffective, and can be easily evaded by attackers. In this subsection, we will lay out how this defence would work and how it can be bypassed.
 
@@ -179,7 +179,7 @@ Now suppose that at time $t$, the robot is at position $\mu_t$ and has a upper b
 Being aware of this scheme, and attacker would seek to incrementally attack the robot. It would start by proposing a position $\mu''_t$ that lies between $\mu_t$ and its target location $\mu'_t$, such that $\mu''_t$ is accepted by the robot. This would successfully shift the robot's position estimate $\mu_{t+1}$ to $\mu''_t$. In the next iteration, the robot would reject any proposals a distance of $\epsilon$ away from $\mu_{t+1} = \mu''_t$. Hence over several iterations, the robot's position estimate would slowly shift to $\mu'_t$, and thus the attacker would be able to escape the bound.
 \todo{Would a diagram be useful here?}
 
-\subsection{Bounds on $\Lambda$ can be quickly escaped}
+\subsection{Bounds on $\Lambda$ can be quickly escaped} \label{hyp:2}
 As shown previously, the strength of an attack is highly dependent on its ability to propose arbitrary values of $\Lambda$. Which leads to another intuitive defence strategy - robots set an upper bound on the $\Lambda$ values that they receive. We believe that this strategy is effective when there is only a single identity spreading misinformation, counterbalanced by many others sending reliable information. In this subsection, we will provide a justification for this belief as well as a strategy that an attacker could take to bypass the upper bound on $\Lambda$.
 
 The $\Lambda$ value of a message can be though of as its ``pull'', or how strongly the message would move a variable towards its proposed location. The greater the value, the stronger the pull. \todo{Norms?} With this in mind, we can think of the robot's location estimate as being ``pulled'' by good and bad factors, where good factors pull the estimate towards a ground truth, whilst bad factors pull it to an alternate location. 
@@ -187,31 +187,76 @@ The $\Lambda$ value of a message can be though of as its ``pull'', or how strong
 When sending a message, each robot decides the strength of the message's pull. Good robots limit their strength to the accuracy of their sensors, while attackers will set their strength to the fullest extent. This once again makes the case for the use of a reasonable upper bound on the strength of a message, similar to the one described above.
 
 We argue that this upper bound is unenforceable in practice, for an attacker can simply ``split'' their message into several weaker parts. So far in our analysis, we have treated $\Lambda_B$ as if it were sent in a single message, however from equation \ref{eqn:bad_pull} we can see that it may also be the result of several bad robots sending messages. In fact, if the upper bound on an individual message's $\Lambda$ is $\lambda$, then an attacker could simply send several messages from several different identities to arrive at a strong $\Lambda_B$, in a Sybil Attack. \todo{Should I add maths here too?}
-\subsubsection{Aside: Attacks are uncorrelated}
+\subsubsection{Aside: Attacks are uncorrelated} \label{hyp:2.5}
 Considering the ``pull based model'' of variables, it stands to reason that in a Sybil Attack, the messages sent by individual identities will not be correlated with each other, as that would greatly simplify the detection and prevention of attacks. Instead, we believe that Sybil Attackers would send messages with wildly different $\mu$ values, that would ``resolve'' to the actual attack that the attacker intends.
 
-\subsection{Long histories are detrimental} % History can be weaponised
+\subsection{Long histories are detrimental} \label{hyp:3} % History can be weaponised
 One little discussed feature of the RobotWeb so far has been its time-windowed history. Instead of remembering every past position that that robot has had, it instead chooses to only remember the past $h$ positions. This improves the performance of robots in the RobotWeb, as they store fewer pose variables and thus perform fewer floating-point operations when updating beliefs. In the original paper, Murai et al. show that the impact of time-windowed history on the average trajectory error of each robot is negligible.
 
 \todo{Add graph}
 
 We believe that keeping the full position history not only has an adverse impact on the compuational performance of a robot, but also amplifies the strength of attacks. If an attacker is able to successfully attack a robot at time $t$, then the pose variable at $t$, $v_t$ will contain a $\mu$ close to the attacker's target $\mu$, and its $\Lambda$ will be high. If $v_t$ is then used to estimate the robot's position at time $t+1$, then it will effectively also attack the robot, as it would further the attacker's belief. The longer the history kept by a robot, the more power an attacker can gain over it.
 
-\subsection{Attacks can spread on their own} % A falling tide sinks all ships/Can't let the genie out of the bottle
+\subsection{Attacks can spread on their own} \label{hyp:4} % A falling tide sinks all ships/Can't let the genie out of the bottle
 Similarly to the previous hypothesis, we can assume that any other variable connected to $v_t$ will be attacked by it. Thus a victim of an attack will unintentionally attack all those it contacts, meaning that attacks have a degree of contagion. 
 
 Attackers may not be able to prevent or limit contagion, as they would need to strongly pull unintentional victims back to a ground truth value. Since no robot has absolute certainty about the locations of any other, the attacker will actually pull them to values close to their ground truth. However, as there is no mechanism to increase $\Lambda$, the attacker will still make the other robots overconfident about their locations, which may bias them in the long term.
-\subsection{Robots are most vulnerable on startup}
+\subsection{Robots are most vulnerable on startup} \label{hyp:5}
 Our final hypothesis is that robots that have just started up are likely to be the most affected by attacks, as they wouldn't have a strong estimate of their location. This would mean that their $\Lambda_G$ is much lower than older robots, increasing the strength of the attack.
 
 \section{Experimental evidence}
 \subsection{Experimental setup}
-We will test our hypotheses in a simulated environment, running the RobotWeb. Each robot, including the attacker, will travel along a predefined path. They will all carry a single \textbf{range-bearing} sensor which would measure the distance and bearing between the robot and what it has measured. All attackers will share a common target path, which they will aim to place their victims on.
+We're going to test in a simulator. The simulator will have n robots in total, where 1 is an attacker and the rest are law-abiding citizens. Each robot will carry a single range-bearing sensor, which allows them to sense how far another robot is, and its bearing relative to themselves. Each sensor has a limited range in which it can measure another robot, and a normal robot will only send messages to robots that it can see. In contrast, the attacker will not bind itself to this ideal instead, it will always send messages to its victims. All robots will move along a path, and the attacker's job will be to convince them to move along a different path.
 
-In order to link the experimental setup with a real-world application, we will consider the following task. There are several patrol robots patrolling a grid, however a subset of these robots are attackers, which aim to prevent their victims discovering a part of the environment. To do this, they will attack all normal robots in the vicinity of the special zone. Normal robots will only communicate with others if they have sensed them, whilst attackers may seek to also communicate with robots that they have not sensed.
+Because the RobotWeb currently isn't deployed anywhere, we have a dearth of real-world situations to test against. This leaves us with the choice of either inventing realistic situations or using simple, artificial situations. Given that right now we want to show that attacks are possible, we will test our hypotheses in lab settings, rather than aim to create realistic situations. The risk of this approach is that some effects may be more pronounced in these settings rather than in the real world, but that's alright because it would help with defenses later on.
+
+We choose to use the following map to test on. The robots will move along the green path, whilst the attackers will try to convince them that they are actually moving along the red path. The robots' belief of their path is the black path. The bottom robot is the attacker.
 
 \subsection{Testing hypothesis 1}
+If you remember \ref{hyp:1}, it suggests that attackers won't be deterred even if robots use a bound on how far messages can displace them. To test this, we use a single attacker and single victim. The attacker also creates an onramp between the robots' actual positions and where it wants them to go. We vary the number of steps that the onramp has. (A series of checkpoints? and we vary how far each checkpoint is from where the robot thinks it is.). And measure the ATE.
+
+We have 1 attacker and 2 victim, all three of which can always measure each other. The history length is 2, to avoid any issues from \ref{hyp:3} (which we later show is legit). The victims reject all messages that are 5cm away from where it thinks it is. We repeat each experiment 10 times. The attacker presents a confidence level of x.
+
+Looking at the Average Trajectory Error of the victims against the distance between checkpoints, we see that a cliff emerges, where once the distance between checkpoints is small enough, that the victims will always follow the attacker. Thus confirming our hypothesis. 
+
+Interestingly enough, we also see that the cliff starts a little short of the displacement bound, which is likely due to the noise in robots' measurements leading them to temporarily believe that they are closer to the robot's path than they actually are.
+
+Looking at both victims' ATE over time, we see that they do reject the attackers' messages until they reach the onramp, which further lends credence to the hypothesis.
+
+Also note that this means that an attack does take some time to occur, since the attacker must wait for its victim to reach the onramp.
+
 \subsection{Testing hypothesis 2}
+Remembering \ref{hyp:2} suggests that a single attacking robot doesn't need to do anything funky to its confidence level, if it creates a bunch of fake identities. To test this we'll vary the number of fake identities that the attacker creates to help it. Again we'll measure ATE.
+
+We have 1 attacker, and 10 victims, all of which can always measure each other. The history size is 2 again, so we avoid any attacks from weaponised histories. Each fake identity that the attacker presents doesn't alter its confidence level. And repeat each experiment 10 times.
+
+Looking at the ATE against number of fake identities, we see that once the attacker presents enough (almost a majority) of fake identities, it can manages to overwhelm the efforts of all good robots and seizes control of localisation in the network. We also note that this doesn't take many ticks to occur. Thus confirming the hypothesis.
+
 \subsection{Testing hypothesis 3}
+Remembering \ref{hyp:3} suggests that having a long history vector is bad. To test this we'll vary the length of the history vector and again measure the ATE. Since reducing the amount of history available is also likely to negatively affect performance in the absence of attackers, we will also investigate the role of history in improving the performance of the system.
+
+We have 1 attacker and 10 victims, which are all able to measure each other. The attacker will send messages with a confidence level of x\%. We repeat 10 times. We will conduct this experiment both with and without the attacker to measure the effect of history size.
+
+Looking at the ATE against history size when an attacker is present reveals that longer histories do in fact harm robots' localisation, but only until a point after which this effect levels off. This is likely due to the fact that the past poses are fully attacked by then, and so can't attack the robots further.
+
+Looking at the ATE against history size when no attackers are present, tells the opposite story - that a longer history does help in the good times, albeit very slightly. We believe that this effect is only due to the fact that the robots have good odometry, which leads us to rerun the experiment with worsed odometry sensors. We can now see a more pronounced positive effect of logner history vectors, which again levels off.
+
+This suggests that for real-world scenarios there will always be a trade-off to be considered. Longer histories may improve localisation when no attacks are taking place, but at the cost of increased risk and a higher computational load.
+
 \subsection{Testing hypothesis 4}
+Remembering \ref{hyp:4} suggests that attacks can spread on their own. We'll test this by having the attacker only attack a single robot, and measuring the loss effect it has on all others around it.
+
+We have 1 attacker, 1 victim and 10 other robots, where the attacker only attacks the middle robot, and all robots can only measure the ones directly adjacent to themselves. We do this to measure the number of hops the attack must take before becoming neutralised. The attacker sends messages with x\% confidence. We repeat 10 times.
+
+Looking at the ATE against number of hops, we can see that the contagion effect does exist, as the robots directly adjacent to the victim have a higher ATE than they would in the control group, although it is much less than the main victim. Thus the hypothesis is correct.
+
+This suggests that in real-world attacks, attackers will not be able to rely on any robots that are able to talk to their victims. Meaning attacks aren't as clean as they attackers would want them to be.
+
 \subsection{Testing hypothesis 5}
+Remembering \ref{hyp:5} suggests that robots are most vulnerable to attacks when they have just entered the RobotWeb. We will test this by introducing a small delay between a robot starting up and it joining the web and measuring the effect of this delay on the ATE.
+
+We have 1 attacker and 1 victim here, which can measure each other. We'll vary both the history size and the startup delay, as the two are likely to be related. The attacker will have a confidence level of x\%. 10 repeats.
+
+Looking at the history size vs startup delay heatmap, we see that the 2 variables are in fact linked...
+
+This suggests that delayed joining might be a strat.
