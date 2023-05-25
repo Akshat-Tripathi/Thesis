@@ -168,7 +168,7 @@ Thus the attacker would send the following message:
 In this section, we will present 5 hypotheses about the behaviour of the entire RobotWeb under attack, using the above analysis. These hypotheses will then be experimentally tested in the next section.
 
 \subsection{Bounds on $\mu$ can be slowly escaped} \label{hyp:1}
-An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its previous position. 
+An intuitive defence against the attackers is setting an upper bound on how far a message can suggest the robot is from its current position belief. 
 However, we believe that this approach is ineffective, and can be easily evaded by attackers. In this subsection, we will lay out how this defence would work and how it can be bypassed.
 
 For the upper bound to be effective, it must occupy a ``Goldilocks zone'' - it cannot be too large or too small. If the upper bound is too large, it would present attackers with ample opportunities to control the robot's belief, especially since they aim to suggest somewhat plausible positions.
@@ -205,58 +205,90 @@ Attackers may not be able to prevent or limit contagion, as they would need to s
 Our final hypothesis is that robots that have just started up are likely to be the most affected by attacks, as they wouldn't have a strong estimate of their location. This would mean that their $\Lambda_G$ is much lower than older robots, increasing the strength of the attack.
 
 \section{Experimental evidence}
+
+Now, we will evaluate the above hypotheses in a simulated environment. Our goal is to show that the predicted phenomena can arise, rather than guaranteeing their emergence. The reasoning behind this is that an attack only needs to be successful in a single situation for it to be considered potent.
+
 \subsection{Experimental setup}
-We're going to test in a simulator. The simulator will have n robots in total, where 1 is an attacker and the rest are law-abiding citizens. Each robot will carry a single range-bearing sensor, which allows them to sense how far another robot is, and its bearing relative to themselves. Each sensor has a limited range in which it can measure another robot, and a normal robot will only send messages to robots that it can see. In contrast, the attacker will not bind itself to this ideal instead, it will always send messages to its victims. All robots will move along a path, and the attacker's job will be to convince them to move along a different path.
+We will use an adapted version of the simulator detailed in \cite[RobotWeb]{Robotweb} for our experiments. Each simulation will contain a single attacking robot and $n$ normal robots. Each robot will move along a predefined path, and aim to localise well to that path - this will be challenged by the attacker, which will attempt to trick them into localising to a path of its choosing.
 
-Because the RobotWeb currently isn't deployed anywhere, we have a dearth of real-world situations to test against. This leaves us with the choice of either inventing realistic situations or using simple, artificial situations. Given that right now we want to show that attacks are possible, we will test our hypotheses in lab settings, rather than aim to create realistic situations. The risk of this approach is that some effects may be more pronounced in these settings rather than in the real world, but that's alright because it would help with defenses later on.
+Furthermore each robot in the simulation will carry 2 sensors; one for odometry and one for measuring others. The odometry sensor will be used by a robot to estimate its current location using its previous location and its motion. The range-bearing sensor will be used to measure other robots - it will measure the distance between the 2 robots and the bearing of the other robot from this one. All robots' range-bearing sensors have a range limit; however, attackers will ignore this as they always know where they want their victims to be.
 
-We choose to use the following map to test on. The robots will move along the green path, whilst the attackers will try to convince them that they are actually moving along the red path. The robots' belief of their path is the black path. The bottom robot is the attacker.
+The simulation has several configurable parameters which we will vary in our experiments. We detail the most important ones below.
+
+% TODO: make table good
+% QUESTION: Should I explain how likely robots are to measure each other?
+\renewcommand{\arraystretch}{1.35}
+\begin{table}[ht]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Parameter}    & \textbf{Description}                                                                                                          & \textbf{Default values}                                                                                        \\ \hline
+Dataset               & The physical path travelled by each robot.                                                                                    & See below                                                                                                      \\ \hline
+Attacker Dataset      & \begin{tabular}[c]{@{}c@{}}The path attackers attempt to trick the robot \\ into localising onto\end{tabular}                 & See below                                                                                                      \\ \hline
+Sliding Window Bucket & \begin{tabular}[c]{@{}c@{}}The number of historical pose variables \\ used by each robot (aka the history size).\end{tabular} & 2                                                                                                             \\ \hline
+N iterations per step & \begin{tabular}[c]{@{}c@{}}The number of GBP iterations performed\\  every time the robot moves.\end{tabular}                 & 10                                                                                                             \\ \hline
+SE2 Prior             & The accuracy of each robot's original position.                                                                               & \begin{tabular}[c]{@{}c@{}}$\sigma_x = 1e^{-8}$ m\\ $\sigma_y = 1e^{-8}$ m\end{tabular}                        \\ \hline
+Between SE2           & The accuracy of each robot's odometry sensor.                                                                                 & \begin{tabular}[c]{@{}c@{}}$\sigma_x = 0.1$ m\\  $\sigma_y = 0.1$ m \\ $\sigma_\theta = 0.01$ rad\end{tabular} \\ \hline
+Sensor range limit    & The furthest a range-bearing sensor can detect.                                                                               & 0.25 m                                                                                                         \\ \hline
+Sensor noise model    & \begin{tabular}[c]{@{}c@{}}The noise associated with the \\ range and bearing measurements.\end{tabular}                      & \begin{tabular}[c]{@{}c@{}}$\sigma_r = 0.05$ m\\ $\sigma_\theta = 0.1$ rad\end{tabular}                        \\ \hline
+Attacker confidence   & \begin{tabular}[c]{@{}c@{}}The confidence claimed by the attacker.\end{tabular}                      & \begin{tabular}[c]{@{}c@{}}$\sigma_x = 0.001$ m\\ $\sigma_y = 0.001$ m\end{tabular} \\ \hline
+\end{tabular}
+\end{table}
+
+\subsubsection{Path design}
+Since the RobotWeb currently hasn't been deployed, we are faced with a dearth of real-world paths for our experiments. This leaves us with the choice of either inventing a realistic path or using a simple, artificial path. For the following experiments, we have chosen to use simple paths as we aim to show that these phenomena can arise. Later we will test our defences on more realistic paths.
+
+%TODO: Add image
+
+We choose to use the above paths to test. The robots will move along the green path, whilst the attackers will try to convince them that they are instead moving along the red path. The robots belief of their path is the black path. The attacker takes the bottom path.
+
+%TODO: Sort out the measurement units
 
 \subsection{Testing hypothesis 1}
-If you remember \ref{hyp:1}, it suggests that attackers won't be deterred even if robots use a bound on how far messages can displace them. To test this, we use a single attacker and single victim. The attacker also creates an onramp between the robots' actual positions and where it wants them to go. We vary the number of steps that the onramp has. (A series of checkpoints? and we vary how far each checkpoint is from where the robot thinks it is.). And measure the ATE.
+The first hypothesis, \ref{hyp:1}, predicts that attackers can overcome bounds on $\mu$, by performing incremental attacks. We test this using 2 robots; an attacker and its victim. For the victim, we introduce a $\mu$ bound defence of 0.05m, so that it only believes messages which are within a 0.05m radius from its current position estimate. For the attacker, we add an onramp composed of several segments, to transition the victim to the attacker's desired path. We vary the length of the onramp's segments and measure the victim's Average Trajectory Error (ATE) over 10 runs.
 
-We have 1 attacker and 2 victim, all three of which can always measure each other. The history length is 2, to avoid any issues from \ref{hyp:3} (which we later show is legit). The victims reject all messages that are 5cm away from where it thinks it is. We repeat each experiment 10 times. The attacker presents a confidence level of x.
+%TODO: Add diagram to show onramp
 
-Looking at the Average Trajectory Error of the victims against the distance between checkpoints, we see that a cliff emerges, where once the distance between checkpoints is small enough, that the victims will always follow the attacker. Thus confirming our hypothesis. 
+Analysing the ATE against segment length, we see that a cliff emerges, where once the segments are short enough, the ATE significantly increases, indicating a successful attack. Thus confirming the first hypothesis, that an attacker can overcome bounds on $\mu$.
 
-Interestingly enough, we also see that the cliff starts a little short of the displacement bound, which is likely due to the noise in robots' measurements leading them to temporarily believe that they are closer to the robot's path than they actually are.
+%TODO: Add graph
 
-Looking at both victims' ATE over time, we see that they do reject the attackers' messages until they reach the onramp, which further lends credence to the hypothesis.
+Interestingly enough, we also see that the cliff starts a little short of the $\mu$ bound. This effect occurs as the victim's position estimate is noisy, leading it to occasionally accept the attacker's messages. Every time the victim accepts one of these messages, it's pulled closer to the attacker's desired path, which in turn makes it more likely to accept the attacker's future messages.
 
-Also note that this means that an attack does take some time to occur, since the attacker must wait for its victim to reach the onramp.
+Looking at the victim's ATE over time in the below graph, we see that the victim's ATE only increases once it is firmly on the onramp. This means that the $\mu$ bound defence still hinders the attacker, as it must both create an onramp and wait for its victim to traverse it.
+
+%TODO: Add graph
 
 \subsection{Testing hypothesis 2}
-Remembering \ref{hyp:2} suggests that a single attacking robot doesn't need to do anything funky to its confidence level, if it creates a bunch of fake identities. To test this we'll vary the number of fake identities that the attacker creates to help it. Again we'll measure ATE.
+The second hypothesis, \ref{hyp:2}, asserts that an attacker can carry out an attack without manipulating its confidence level, instead the attacker would send many messages under many fake identities. We test this using 11 robots; an attacker and its 10 victims. We also prevent the attacker from altering the confidence level of any of the messages it sends. We vary the number of false identities that the attacker creates, and measure the average ATE across each victim. We repeat this experiment 10 times.
 
-We have 1 attacker, and 10 victims, all of which can always measure each other. The history size is 2 again, so we avoid any attacks from weaponised histories. Each fake identity that the attacker presents doesn't alter its confidence level. And repeat each experiment 10 times.
-
-Looking at the ATE against number of fake identities, we see that once the attacker presents enough (almost a majority) of fake identities, it can manages to overwhelm the efforts of all good robots and seizes control of localisation in the network. We also note that this doesn't take many ticks to occur. Thus confirming the hypothesis.
+From the above graph, we can see that as the number of false identities grows, so too does the average ATE. Unlike the previous experiment, when we analyse the ATE over time, we see that the effect of this attack has no delay, making it more potent. These two observations thus confirm the second hypothesis.
 
 \subsection{Testing hypothesis 3}
-Remembering \ref{hyp:3} suggests that having a long history vector is bad. To test this we'll vary the length of the history vector and again measure the ATE. Since reducing the amount of history available is also likely to negatively affect performance in the absence of attackers, we will also investigate the role of history in improving the performance of the system.
+The third hypothesis suggests that robots keeping longer histories are more vulnerable to attacks. We test this using 2 robots; an attacker and its victim. We vary the victim's history size and measure its ATE. In order to accurately gauge the effect of the history size, we also weaken the attacker's attacks by reducing its confidence such that $\sigma_x = \sigma_y = 10$ m. We repeat this experiment 10 times.
 
-We have 1 attacker and 10 victims, which are all able to measure each other. The attacker will send messages with a confidence level of x\%. We repeat 10 times. We will conduct this experiment both with and without the attacker to measure the effect of history size.
+% Figure out how this would work.
 
 Looking at the ATE against history size when an attacker is present reveals that longer histories do in fact harm robots' localisation, but only until a point after which this effect levels off. This is likely due to the fact that the past poses are fully attacked by then, and so can't attack the robots further.
 
-Looking at the ATE against history size when no attackers are present, tells the opposite story - that a longer history does help in the good times, albeit very slightly. We believe that this effect is only due to the fact that the robots have good odometry, which leads us to rerun the experiment with worsed odometry sensors. We can now see a more pronounced positive effect of logner history vectors, which again levels off.
+Looking at the ATE against history size when no attackers are present, tells the opposite story - that a longer history does help in the good times, albeit very slightly. We believe that this effect is only due to the fact that the robots have good odometry, which leads us to rerun the experiment with worse odometry sensors. We can now see a more pronounced positive effect of longer history vectors, which again levels off.
 
-This suggests that for real-world scenarios there will always be a trade-off to be considered. Longer histories may improve localisation when no attacks are taking place, but at the cost of increased risk and a higher computational load.
+This suggests that for real-world scenarios there will always be a trade-off to be considered. Longer histories may improve localisation when no attacks are taking place but at the cost of increased risk and a higher computational load.
 
 \subsection{Testing hypothesis 4}
-Remembering \ref{hyp:4} suggests that attacks can spread on their own. We'll test this by having the attacker only attack a single robot, and measuring the loss effect it has on all others around it.
+The fourth hypothesis predicts that attacks will spread without the active involvement of the attacker, where the victims inadvertently will attack other robots. We test this using 11 robots; an attacker, its victim and 9 other robots. We devise a special configuration for this experiment where the attacker only communicates with its victim, and only adjacent robots can communicate with each other. This provides us with a daisy chain communication pattern, where the victim's attack must take several ``hops'' to reach the ends of the chain. We then measure the ATE of each robot over 10 runs. For this experiment, we utilise a control group, in which there is no attacker, to highlight the effect of the attacker.
 
-We have 1 attacker, 1 victim and 10 other robots, where the attacker only attacks the middle robot, and all robots can only measure the ones directly adjacent to themselves. We do this to measure the number of hops the attack must take before becoming neutralised. The attacker sends messages with x\% confidence. We repeat 10 times.
+ % TODO: graph
 
-Looking at the ATE against number of hops, we can see that the contagion effect does exist, as the robots directly adjacent to the victim have a higher ATE than they would in the control group, although it is much less than the main victim. Thus the hypothesis is correct.
+Looking at the above graph, we can see that the few number of hops from a robot to the victim, the higher its ATE will be. We also see that the ATE of every robot in the attacked group is higher than in the control group, which proves the existence of this contagion effect - thus proving the hypothesis.
 
-This suggests that in real-world attacks, attackers will not be able to rely on any robots that are able to talk to their victims. Meaning attacks aren't as clean as they attackers would want them to be.
+This effect prevents real-world attackers from relying on any robots in the vicinity of their victims, lest they are themselves attacked by their own attack. This serves as a small penalty for misbehaviour but is not sufficient to deter a motivated attacker.
 
 \subsection{Testing hypothesis 5}
-Remembering \ref{hyp:5} suggests that robots are most vulnerable to attacks when they have just entered the RobotWeb. We will test this by introducing a small delay between a robot starting up and it joining the web and measuring the effect of this delay on the ATE.
+The fifth and final hypothesis posits that young robots which have recently joined the web will be the most vulnerable to attacks. We test using 2 robots; an attacker and its victim. We introduce a delay between when the victim starts and when it joins the network. We then measure the ATE of the victim across 10 runs. We also vary the victim's history size, as we believe that there is likely a link between the optimum startup delay of a robot and the size of its history.
 
-We have 1 attacker and 1 victim here, which can measure each other. We'll vary both the history size and the startup delay, as the two are likely to be related. The attacker will have a confidence level of x\%. 10 repeats.
+Looking at the above heatmap, we see that the startup delay does provide a small defence against the attacker, but that its strength diminishes as the delay lengthens. We also see a clear correlation between the effect of the startup delay and the history size used by the victim.
 
-Looking at the history size vs startup delay heatmap, we see that the 2 variables are in fact linked...
+These results suggest that a small startup delay does provide a defence against attacks, although it is inadequate to fully defend the robot. We also see that the startup delay does not significantly hinder localisation in the absence of attackers, meaning that it is a cheap defence that can be used.
 
-This suggests that delayed joining might be a strat.
+% TODO: Add a conclusions section?

@@ -157,6 +157,8 @@ The Robot Web further improves the accuracy of robots' locations by allowing rob
 
     \caption[Robot Web factor graph]{An example of a factor graph in the Robot Web. Each robot's variables are connected by odometry factors. At times $t_1$ and $t_2$, both robots sense each other, and so exchange measurements by creating inter-robot-measurement factors on the graph.}
 \end{figure}
+% TODO add the anchoring factor
+% TODO explain the different types of factors
 
 The Robot Web represents the locations and sensor measurements of all robots using general Lie groups, rather than any specific group. This has the consequence that any type of sensor or robot can be a part of the Robot Web. For example, a drone moving in 3D space can interact with a car moving on a plane.
 
