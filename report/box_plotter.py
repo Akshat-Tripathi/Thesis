@@ -1,11 +1,11 @@
 import matplotlib
-matplotlib.use("pgf")
-matplotlib.rcParams.update({
-    "pgf.texsystem": "pdflatex",
-    'font.family': 'serif',
-    'text.usetex': True,
-    'pgf.rcfonts': False,
-})
+# matplotlib.use("pgf")
+# matplotlib.rcParams.update({
+#     "pgf.texsystem": "pdflatex",
+#     'font.family': 'serif',
+#     'text.usetex': True,
+#     'pgf.rcfonts': False,
+# })
 
 
 import matplotlib.pyplot as plt
@@ -57,6 +57,14 @@ if __name__ == "__main__":
     
     # Just for mu_bound
     # te = te.where(te["tick"].gt(50.0))
+    
+    # Just for sybils
+    # te = te.where(te["tick"].gt(0.0))
+
+    # Just for history size
+    # te = te.where(te["tick"].gt(50.0))
+
+    # Just for contagion
 
     for var in args.vars:
         te[var] = te[var].fillna(-1).astype("int")
@@ -74,7 +82,7 @@ if __name__ == "__main__":
     ax.set_xticklabels(grouped.groups.keys())
 
     # Add labels and title
-    ax.set_xlabel("Number of Sybils")
+    ax.set_xlabel("N bots")
     ax.set_ylabel("Trajectory Error (m)")
 
-    plt.savefig(os.path.join("graphs", f"{args.name}.pdf"))
+    plt.savefig(os.path.join("graphs", f"{args.name}.png"))
