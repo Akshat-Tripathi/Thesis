@@ -57,6 +57,14 @@ if __name__ == "__main__":
         default=0
     )
 
+    parser.add_argument(
+        "-x",
+        "--x_axis",
+        type=str,
+        help="Label to put on the x axis",
+        required=True
+    )
+
     args = parser.parse_args()
 
     te = pd.read_csv(os.path.join(WSL_PATH, args.path, "all_tes.csv"))
@@ -86,7 +94,7 @@ if __name__ == "__main__":
     ax.set_xticklabels(grouped.groups.keys())
 
     # Add labels and title
-    ax.set_xlabel("History Size")
+    ax.set_xlabel(args.x_axis)
     ax.set_ylabel("Trajectory Error (m)")
 
     plt.savefig(os.path.join("graphs", f"{args.name}.pdf"))
