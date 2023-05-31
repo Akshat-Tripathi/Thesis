@@ -7,11 +7,13 @@ matplotlib.rcParams.update({
     'pgf.rcfonts': False,
 })
 
-
+from matplotlib import cm
 import matplotlib.pyplot as plt
+import numpy as np
 import argparse
 import pandas as pd
 import os
+
 
 WSL_PATH = "//wsl.localhost//Ubuntu-20.04//home//akshat//projects//thesis//ikura//"
 
@@ -49,44 +51,39 @@ if __name__ == "__main__":
         default=[]
     )
 
-    parser.add_argument(
-        "-s",
-        "--skip",
-        type=int,
-        help="Number of ticks to skip",
-        default=0
-    )
-
     args = parser.parse_args()
 
     te = pd.read_csv(os.path.join(WSL_PATH, args.path, "all_tes.csv"))
     te = te.where(te["attacker?"] == False)
-    te = te.where(te["tick"].ge(args.skip))
     te["TE"] /= 100
-
-    # Just for contagion
-    if "contagion" in args.path:
-        te = te.where(te["attackers"] == True)
-        te["hops"] = abs(te["#id"] - 5)
+    
+    te = te.where(te["tick"].le(20))
 
     te = te.dropna()
     for var in args.vars:
         te[var] = te[var].astype("int")
 
-    grouped = te.groupby(args.vars)
-    
-    group_values = [list(group["TE"]) for _, group in grouped]
+    te.drop(columns=["#id", "run", "tick"], inplace=True)
+
+    grouped = te.groupby(args.vars).aggregate("mean")
+    arr = grouped.unstack(0)
 
     fig, ax = plt.subplots()
 
     # Draw the boxplot
-    ax.boxplot(group_values)
+    heatmap = ax.imshow(arr, cmap=cm.coolwarm)
+
+    cbar = plt.colorbar(heatmap, ticks=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+    cbar.set_label("Average Trajectory Error (m)")
 
     # Set x-axis tick labels
-    ax.set_xticklabels(grouped.groups.keys())
-
-    # Add labels and title
     ax.set_xlabel("History Size")
-    ax.set_ylabel("Trajectory Error (m)")
+    ax.set_xticks(range(20))
+    ax.set_xticklabels(range(2, 22))
+
+    ax.set_ylabel("Startup Delay")
+    ax.set_yticks(range(21))
+    ax.set_yticklabels(range(21))
+    ax.set_ylim(0, 20)
 
     plt.savefig(os.path.join("graphs", f"{args.name}.pdf"))
