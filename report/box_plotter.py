@@ -64,6 +64,14 @@ if __name__ == "__main__":
         help="Label to put on the x axis",
         required=True
     )
+    
+    parser.add_argument(
+        "-y",
+        "--y_axis",
+        type=str,
+        help="Label to put on the y axis",
+        default="Average Trajectory Error (m)"
+    )
 
     args = parser.parse_args()
 
@@ -95,6 +103,6 @@ if __name__ == "__main__":
 
     # Add labels and title
     ax.set_xlabel(args.x_axis)
-    ax.set_ylabel("Trajectory Error (m)")
+    ax.set_ylabel(args.y_axis)
 
     plt.savefig(os.path.join("graphs", f"{args.name}.pdf"))
