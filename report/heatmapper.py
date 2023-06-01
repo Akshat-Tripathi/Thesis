@@ -79,7 +79,7 @@ if __name__ == "__main__":
     # Set x-axis tick labels
     ax.set_xlabel("History Size")
     ax.set_xticks(range(20))
-    ax.set_xticklabels(range(2, 22))
+    ax.set_xticklabels(range(1, 21))
 
     ax.set_ylabel("Startup Delay")
     ax.set_yticks(range(21))

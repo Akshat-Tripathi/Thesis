@@ -85,6 +85,10 @@ if __name__ == "__main__":
         te = te.where(te["attackers"] == True)
         te["hops"] = abs(te["#id"] - 5)
 
+    # Just for anything with history size
+    if "window_size" in te.columns:
+        te["window_size"] -= 1
+
     te = te.dropna()
     for var in args.vars:
         te[var] = te[var].astype("int")
