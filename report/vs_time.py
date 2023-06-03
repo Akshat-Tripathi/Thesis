@@ -62,9 +62,14 @@ if __name__ == "__main__":
     te = pd.read_csv(os.path.join(WSL_PATH, args.path, "all_tes.csv"))
     te = te.where(te["attacker?"] == False)
 
-    te = te.drop(["#id", "run"], axis=1)
     te["TE"] /= 100
 
+    if "contagion" in args.path:
+        te = te.where(te["attackers"] == True)
+        te["hops"] = abs(te["#id"] - 5)
+        te = te.where(te["hops"] != 0)
+
+    te = te.drop(["#id", "run"], axis=1)
     te = te.dropna()
 
     grouped = te.groupby(args.vars + ["tick"])
@@ -81,16 +86,26 @@ if __name__ == "__main__":
     # Horrible code
     if "sybil" in args.path:
         legend_title_x = 146
+        legend_title_y = 0.55
         legend_range = range(20)
         legend_fontsize = 8
+        legend_loc = (1.04, 0)
     elif "mu_bound" in args.path:
         legend_title_x = 145
+        legend_title_y = 0.55
         legend_range = range(1, 17)
         legend_fontsize = 10
+        legend_loc = (1.04, 0)
+    elif "contagion" in args.path:
+        legend_title_x = 147.5
+        legend_title_y = 0.053
+        legend_range = range(1, 6)
+        legend_fontsize = 10
+        legend_loc = (1.04, 0.6)
 
-    ax.text(legend_title_x, 0.55, args.x_axis)
+    ax.text(legend_title_x, legend_title_y, args.x_axis)
 
-    ax.legend(legend_range, loc=(1.04, 0), fontsize=legend_fontsize)
+    ax.legend(legend_range, loc=legend_loc, fontsize=legend_fontsize)
     ax.set_xlabel("Tick")
     ax.set_ylabel("Average Trajectory Error (m)")
 
