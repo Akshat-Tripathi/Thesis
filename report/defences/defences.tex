@@ -1,9 +1,59 @@
-\chapter{Evaluation Plan}
+\chapter{Defence against the Dark Arts}
+This chapter serves as a dual to the previous chapter. Here we will use our understanding of the RobotWeb under attack to design and evaluate a collective defence strategy. First, we will discuss the limitations of individualistic defence Strategies. Then we shall outline the conceptual backbone of our defence, and evaluate it in realistic scenarios. Finally, we will evaluate some improvements to this defence.
 
-I plan to evaluate this thesis by simulating many different scenarios, varying the paths the robots will take, the number of attackers in the system, the types of attackers in the system and if I find multiple defences, then varying the different defences too. From these runs, I will compute an error metric measuring the deviation of each robot from its actual path. I then plan to compare the results to scenarios where there are no attackers, no defences and no Robot Web, to see how each effect the localisation of the robots.
+\section{The Limits of Individualism}
+When finding ways to defend robots from attack, one may intuitively reach for approaches where a single robot can defend itself - and these approaches are not without their merits. First, they guarantee that each robot would \textit{always} be able to defend itself from attack, as it only depends on itself. Secondly, they serve as effective deterrents against attacks, as an attacker wouldn't attempt an attack without any hope of success. Essentially allowing for full and fearless participation in the RobotWeb. 
 
-I hope to observe that the defences I will implement are effective at preventing attackers from being able to influence the network, this would mean that the case where there are no attackers would have a similar error to the case where there are attackers and defences.
+However, we argue that these approaches are not possible in the RobotWeb as it stands today. In an entirely trustless system, a robot would be entirely reliant on its odometry sensors to verify the veracity of incoming messages. Yet as we have seen in \ref{hyp:mu_bound} and \ref{hyp:sybils}, such measures can be easily circumvented. Thus we can conclude that a robot must find a method to trust others. For one robot to be trusted by another, it must be able to credibly signal its trustworthiness to the other. This can only happen if robots are penalised for spreading misinformation and only for spreading misinformation.
 
-I also hope that the defences are not invasive, and so wouldn't require major changes to the hardware of robots. This includes computational resources, which are likely to be limited.
+One such approach would be to use a reputation system, where messages from robots with a higher reputation are given a higher weight than those with lower reputations. A robot's reputation would increase with every correct message it sends, and decrease with every incorrect message. Robots would decide the correctness of a message by measuring how well it aligns with their current beliefs - the better the alignment the more likely the message is to be correct. Reputation systems come in 2 distinct flavours, local and global. 
 
-I would also like to evaluate the defences in a real-world environment.
+In a global reputation system, all robots in the RobotWeb would collectively track one another's reputations, so discovered attackers would be universally distrusted. However, attackers could also attempt to lower the reputations of good robots by claiming that \textit{they} themselves are victims of the good robots. This presents a problem, as now robots need a mechanism to verify misinformation claims, yet if such a mechanism existed then they would not need to rely on a global information system. This leads us to conclude that a global reputation system is not a viable solution here.
+
+Alternatively, in a local reputation system, each robot maintains its own set of beliefs about the reputations of those it encounters. This eliminates the need for multiple robots to reconcile their reputation beliefs and thus prevents attackers from attacking the reputations of others. However, this still falls prey to problems that haunt all reputation systems. Firstly, an attacker can reset its reputation by simply changing its identity. Secondly, an attacker can amass a significant amount of reputation through the use of Sybils, which it would then use to attack.
+
+Another approach would be to use resources to provide credible signals akin to Proof of Work and Proof of Stake systems. As shown in the background section, schemes using computational resources fall flat due to the heterogeneity of the RobotWeb - some robots may run on microcontrollers whilst others feature GPUs. Schemes backed by financial resources also face the same problem as global reputation systems, as there is still no trusted method to solve disputes.
+
+Finally, we believe that any motivated attacker is likely to treat any incurred penalties as prices, which poses a significant threat to safety as robots are physical entities. Thus we look to systems with a degree of partial trust for our solution.
+
+\section{A Group-Based Defence}
+Given that individual robots are unable to defend themselves against attacks, we now organise them into groups. Robots form these groups using prior information that allows them to trust one another. For example, robots with the same owner can all trust each other. The nature of this prior information is left as an implementation detail as several suitable approaches exist. %TODO: (list/cite them).
+
+Each robot in a group can have one of 2 roles - it can be a leader or a follower. Leaders choose to ignore all messages they receive from all untrusted robots. Crucially, this also includes their followers, as a follower under attack will unwittingly attack all others due to the contagion effect. Since leaders are unable to receive messages from other sources, their localisation accuracy will fall over time. This is combatted through term limits, where once a leader has served its term, it will revert to a follower and trigger an election.
+
+Meanwhile, a follower relies on its leaders to filter misinformation. It first combines all the messages it receives from its leaders using \ref{eqn:bp_belief} to obtain a baseline estimate. Then for each message it receives, it calculates the KL divergence between the message and its baseline estimate, if the KL divergence falls outside a bound, it will reject the message. Note, a follower is unwaveringly obedient to its leader and can reject messages from its odometry factors if they fall outside the bound. 
+
+%TODO: Add pictures
+
+At first glance this may seem similar to the $\mu$ bound defence discussed earlier however, this is not the case. Unlike the $\mu$ bound defence, the baseline estimate here cannot be influenced by an attacker as it originates from the leaders, which cannot be attacked as they ignore all untrusted incoming messages. If an onramp attack occurs, the attacker will not be able to convince its victim past a certain point, as the baseline estimate will not shift with it. A Sybil attack is similarly rendered useless as it will fail to move the robot's belief outside the bound of the baseline estimate.
+
+\subsection{Inductive proof}
+We will now formally prove the resiliency of this defence for both leaders and followers.
+
+Lemma 1: Combining 2 correct localisations will always result in yet another correct localisation.
+
+Lemma 2: Combining n incorrect localisations will never result in a correct localisation
+
+\subsubsection{Leaders}
+At time t = 0, a leader will start with a correct localisation.
+
+Now assuming that at time t = k, the leader has a correct localisation.
+
+It will receive messages only from other leaders, which are guaranteed to have correct localisations. Combining these messages, the leader will arrive at another correct localisation. Since the localisation at time t = k + 1 is dependent on the localisation at time t and the messages sent at time t, the leader now has a correct localisation.
+
+\subsubsection{Followers}
+At time t = 0, a follower will also start with a correct localisation.
+
+Now assuming that at time t = k, the follower has a correct localisation.
+
+It will first receive a series of correct localisation messages from the leaders, which it will combine into another correct localisation. Then it will receive a series of messages which could have correct or incorrect localisations. From this, it will only allow the correct localisations through, and so its next localisation will be correct.
+
+\subsection{Experimental confirmation}
+It's testin time
+Realistic scenarios
+Attacks be attacking
+
+
+
+\subsection{Strategies to improve performance}
+\subsection{Exits, Mergers and Acquisitions}
