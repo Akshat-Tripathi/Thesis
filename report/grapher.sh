@@ -23,3 +23,4 @@ python heatmapper.py --i experiments//results//startup_delay -v history_size del
 
 python vs_time.py --i experiments//results//mu_bound -n mu_bound_vs_time --x_axis "N Segments" -v onramp
 python vs_time.py --i experiments//results//sybils -n sybils_vs_time --x_axis "N Sybils" -v sybils
+❯ python vs_time.py --i experiments//results//contagion -n contagion_vs_time --x_axis "N Hops" -v hops

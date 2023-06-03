@@ -57,7 +57,7 @@ if __name__ == "__main__":
     te = te.where(te["attacker?"] == False)
     te["TE"] /= 100
     
-    te = te.where(te["tick"].le(20))
+    te = te.where(te["tick"].gt(te["delay"]))
 
     te = te.dropna()
     for var in args.vars:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # Draw the boxplot
     heatmap = ax.imshow(arr, cmap=cm.coolwarm)
 
-    cbar = plt.colorbar(heatmap, ticks=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6])
+    cbar = plt.colorbar(heatmap)
     cbar.set_label("Average Trajectory Error (m)")
 
     # Set x-axis tick labels
