@@ -1,29 +1,25 @@
 % \chapter{Related Work}
-\noindent\makebox[\linewidth]{\rule{\textwidth}{1pt}}
 
+\section{WiFi Fingerprinting} \label{section:related_work}
+% In this section, we will review two WiFi fingerprinting-based approaches to binding identities to entities. 
 
-Several different techniques have been explored in preventing the types of identity-based attacks discussed in this chapter. In the \nth{2} half of this chapter, we will examine and evaluate these. We broadly group these approaches into 2 main groups; the first uses the physical characteristics of signal propagation to bind an identity to an entity, whilst the second exploits the fact that no entity can perform an unlimited amount of computation.
+There are many ways for devices to communicate wirelessly, many of which use radio-waves. WiFi is the name of a family of networking protocols that allow for this; it derives from the IEEE 802.11 standard. In order to use WiFi, a device must have at least one wireless antenna which can transmit and receive within the bands specified in the IEEE 802.11 standard; usually 2.4GHz and 5GHz.
 
-\section{Wifi Fingerprinting}
-% In this section, we will review two Wifi fingerprinting-based approaches to binding identities to entities. 
-
-There are many ways for devices to communicate wirelessly, many of which use radiowaves. Wifi is the name of a family of networking protocols that allow for this, it derives from the IEEE 802.11 standard. In order to use Wifi, a device must have at least one wireless antenna which can transmit and receive within the bands specified in the IEEE 802.11 standard; usually 2.4GHz and 5GHz.
-
-When a device sends a packet using Wifi, it transmits a radio signal for a given number of nanoseconds from its antenna. This signal will attenuate as it travels further and further through space. After a certain distance, also known as the communicating range of the antenna, the signal will fade into background noise. The signal leaves the antenna in all directions simultaneously, as a radio wave. Eventually, a small part of this wave will reach the receiver's antenna and the packet will be decoded out of it.
+When a device sends a packet using WiFi, it transmits a radio signal for a given number of nanoseconds from its antenna. This signal will attenuate as it travels further and further through space. After a certain distance, also known as the communicating range of the antenna, the signal will fade into background noise. The signal leaves the antenna in all directions simultaneously, as a radio wave. Eventually, a small part of this wave will reach the receiver's antenna and the packet will be decoded out of it.
 
 Other parts of the wave will either diffract around corners, reflect off some large objects, or scatter off many small objects \cite{SignalProp}. Consequently, this means that a receiver may receive a packet from several different directions simultaneously, that is that it could encounter different parts of the same wave from different directions at the same time. This phenomenon is known as multipath scattering. %TODO Add diagram? 
 
-Multipath scattering has two interesting properties; it is practically impossible to predict, ahead of time, the distribution of signals around a receiver and it is unlikely that two receivers will observe the same signal propagation with sufficient multipath scattering\citationneeded. These properties allow for devices to ``fingerprint'' every packet they receive, such that two different transmitters cannot have the same fingerprint unless they are simultaneously located at the same place. 
+Multipath scattering has two interesting properties; it is practically impossible to predict, ahead of time, the distribution of signals around a receiver and it is unlikely that two receivers will observe the same signal propagation with sufficient multipath scattering. These properties allow for devices to ``fingerprint'' every packet they receive, such that two different transmitters cannot have the same fingerprint unless they are simultaneously located at the same place. 
 
-However, implementing multipath scattering-based algorithms have some technical constraints; namely that the receiving antenna must be able to measure the signal in each direction, and that a sufficient amount of multipath scattering must occur. Usually, these algorithms struggle in outdoor environments, where the environment may not provide objects for multipath scattering to occur\citationneeded.
+However, implementing multipath scattering-based algorithms have some technical constraints; namely that the receiving antenna must be able to measure the signal in each direction, and that a sufficient amount of multipath scattering must occur. Usually, these algorithms struggle in outdoor environments, where the environment may not provide objects for multipath scattering to occur.
 
-The following papers discuss methods to circumvent these constraints, focussing on securing robot networks from spoofing and Sybil attacks. 
+The following papers discuss methods to circumvent these constraints, focusing on securing robot networks from spoofing and Sybil attacks. 
 
 \subsection{Guaranteeing spoof-resilient multi-robot networks}
-Gil et al, \cite{GuaranteeingSpoofResilience} provides an interesting approach to some of the aforementioned problems, most notably the problem of requiring expensive hardware to allow the receiving antenna to measure the signal in each direction. They do this by inventing an algorithm that allows them to build a ``virtual spoofer sensor'' only using commercially available wifi hardware, which creates a ``spatial fingerprint'' from each transmission in the network. They use the output from this sensor to calculate a confidence metric $\alpha$ indicating their algorithm's confidence that a robot's identity is its entity. Finally, they characterise the theoretical performance of the ``virtual spoofer sensor'' and provide empirical evidence to support their claims by undertaking several experiments.
+Gil et al, \cite{GuaranteeingSpoofResilience} provides an interesting approach to some of the aforementioned problems, most notably the problem of requiring expensive hardware to allow the receiving antenna to measure the signal in each direction. They do this by inventing an algorithm that allows them to build a ``virtual spoofer sensor'' only using commercially available WiFi hardware, which creates a ``spatial fingerprint'' from each transmission in the network. They use the output from this sensor to calculate a confidence metric $\alpha$ indicating their algorithm's confidence that a robot's identity is its entity. Finally, they characterise the theoretical performance of the ``virtual spoofer sensor'' and provide empirical evidence to support their claims by undertaking several experiments.
 
 The authors build the ``virtual spoofer sensor'' by building upon \textit{Synthetic Aperture Radar} (SAR) techniques, which allow a single antenna to be used to simulate an antenna array. SAR involves moving the antenna to different locations and taking snapshots of the signals received. These snapshots are then combined using signal-processing techniques to emulate a multi-antenna array \cite{BAD_SAR}.\unsure{Diagram needed?}
-%TODO: This isn't a great citation, go to the original paper
+
 The ``spatial fingerprint'' calculated, is then compared to the fingerprints of other clients, and clients with identical fingerprints are assumed to be Sybil attackers.
 
 The authors evaluate their algorithm in the context of the following problem statement. Given an environment with several ``clients'', each expecting service from mobile ``servers'', dynamically find the optimal layout for the servers such that each ``client'' is served. A subset of clients are assumed to be malicious and are carrying out Sybil attacks in order to influence the ``servers'' to move closer to them.
@@ -36,7 +32,7 @@ The authors perform four experiments to validate their hypotheses:
     \item They apply their system to a drone delivery problem, where the ``server'' needs to visit each real ``client'' to deliver a package and again find that their system provides near-optimal results when there are 3$\times$ more spoofed agents.
 \end{enumerate}
 
-\unsure{I have suspicions about how they did the last 2 experiments, especially since the phantoms are nowhere near the actual attacker.}
+% \unsure{I have suspicions about how they did the last 2 experiments, especially since the phantoms are nowhere near the actual attacker.}
 
 \subsection{Lightweight Sybil-Resilient Multi-Robot Networks by Multipath Manipulation}
 Huang et al. \cite{MultiPathManipulation} take a different approach to Gil et al. \cite{GuaranteeingSpoofResilience}; instead of relying upon the environment to provide multipath scattering, they actively cause it by using backscatter tags. This offers two main advantages over Gil et al.: \begin{enumerate*}
@@ -75,12 +71,22 @@ Proof of Work is underpinned by the insight that no entity in a network can perf
 
 A problem with this strategy is that it requires wasting computational resources, which may be in short supply for the embedded systems used in robotics. Furthermore, it requires that normal robots constantly pay a steep price for their security even without the presence of attackers.
 
-Gupta et al. \cite{PoW} design an iterative algorithm (\textbf{GMCom}) that solves the \nthM{2} problem, where if attackers spend $T$ resources, whilst $J$ new non-attacking identities are presented, then each non-attacker only needs to spend $O(\sqrt[2]{TJ} + J)$ resources. They refer to this property as the \textit{assymetry} of the algorithm, as attackers must spend many more resources than non-attackers.
+Gupta et al. \cite{PoW} design an iterative algorithm (\textbf{GMCom}) that solves both problems, where if attackers spend $T$ resources, whilst $J$ new non-attacking identities are presented, then each non-attacker only needs to spend $O(\sqrt[2]{TJ} + J)$ resources. They refer to this property as the \textit{assymetry} of the algorithm, as attackers must spend many more resources than non-attackers.
 
-GMCom organises identities into a group, where a subset of them form a committee. When a new identity tries to join the group, it must first solve a puzzle set by the committee. Occasionally, the committee will seek to purge all attackers from the group, by issuing a \textit{purge puzzle}, which must be solved by all identities before a new committee is formed, otherwise the identity will be purged from the group. This limits the wasted computation that good entities must perform since they only need to solve a single puzzle when entering a group, and occasionally thereafter, whilst an attacker would need to solve puzzles for each identity it claims, and would need to solve them repeatedly to avoid being purged.
+GMCom organises identities into a group, where a subset of them form a committee. When a new identity tries to join the group, it must first solve a puzzle set by the committee. Occasionally, the committee will seek to purge all attackers from the group, by issuing a \textit{purge puzzle}, which must be solved by all identities before a new committee is formed, otherwise, the identity will be purged from the group. This limits the wasted computation that good entities must perform since they only need to solve a single puzzle when entering a group, and occasionally thereafter, whilst an attacker would need to solve puzzles for each identity it claims, and would need to solve them repeatedly to avoid being purged.
 
 However, this approach is not without its limitations. The authors assume that attackers will always only be able to command a fraction, $\alpha$, of the total resources of the system, however, the heterogeneous nature of robots means that this may not always be guaranteed. For example, in a drone delivery system, each drone would likely only possess a small amount of computational power, but an attacker may attack the system using their desktop computer.
 
-% GMCom organises identities into a group, where a subset of them form a committee. When a new identity tries to join the group, it must first solve a current epoch's puzzle, set by the committee, and broadcast its solution. Once a certain number of identities has joined or left the group, the committee starts the next epoch with a new puzzle and new committee. 
-% \section{Attacks on sensor networks}
-% \section{Reputation based systems}
+\section{Preliminaries} \label{section:prelim}
+
+Throughout this chapter, we have discussed and examined many theoretical concepts that will guide our work. We now conclude this chapter by discussing the practical components that this project will extend. 
+
+The main component that we will extend is the RobotWeb simulator first described in \cite{Robotweb}. It provides a C++ implementation of many of the core ideas of the RobotWeb, including a custom implementation of the Gaussian Belief Propagation algorithm.
+
+In this simulation, robots can take one of two forms, they can act as either dynamic robots or static ``beacon landmarks''. Robots move, tick by tick, along predefined paths, constantly estimating their localisations via simulated odometry. After moving, robots will try to sense as many of their peers as possible, creating factors between their pose variables in accordance with the rules of the RobotWeb. After every sensor has sensed, several iterations of GBP occur, the exact number being configurable by a user. Once all iterations are complete, the simulation ticks on, and all robots make their next movement.
+
+The main sensors used in this simulation are the abstract ``range-bearing'' sensors. These allow one robot to measure the distance between it and another, and to measure the other's relative bearing from it. These sensors also operate with a configurable amount of normally distributed noise.
+
+The main Lie Groups used by the simulator are the SE2, SE3, R2 and R3 Lie Groups. The former two are used to represent the localisations of robots in 2 and 3-dimensional space, whilst the latter two are used to represent the localisations of beacons in 2 and 3-dimensional space. The simulator couples these Lie Groups with its implementation of GBP, where the state of each message is one of them.
+
+However, as the original research did not explore security in the RobotWeb, neither does the simulator. The version of the simulator provided at the start of this thesis, did not distinguish between the types of robot that we consider, i.e. it did not differentiate between attackers and normal robots, instead assuming that no attackers will exist. This also meant that the simulator did not provide a standard method to implement defences. It is for these reasons that we later refactored the codebase of the simulator.

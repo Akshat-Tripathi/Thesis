@@ -1,0 +1,155 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Shape: Arc [id:dp2186219161659576] 
+\draw  [draw opacity=0] (371.97,38.57) .. controls (378.25,46.93) and (381.97,57.31) .. (381.97,68.57) .. controls (381.97,92.88) and (364.62,113.14) .. (341.62,117.64) -- (331.97,68.57) -- cycle ; \draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (371.97,38.57) .. controls (378.25,46.93) and (381.97,57.31) .. (381.97,68.57) .. controls (381.97,92.88) and (364.62,113.14) .. (341.62,117.64) ;  
+%Shape: Arc [id:dp14231683771998604] 
+\draw  [draw opacity=0] (297.04,32.79) .. controls (306.05,23.99) and (318.38,18.57) .. (331.97,18.57) .. controls (345.86,18.57) and (358.44,24.24) .. (367.5,33.39) -- (331.97,68.57) -- cycle ; \draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (297.04,32.79) .. controls (306.05,23.99) and (318.38,18.57) .. (331.97,18.57) .. controls (345.86,18.57) and (358.44,24.24) .. (367.5,33.39) ;  
+%Shape: Arc [id:dp49745961484691537] 
+\draw  [draw opacity=0] (311.55,114.3) .. controls (301.67,109.96) and (293.46,102.5) .. (288.16,93.18) -- (331.67,68.52) -- cycle ; \draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (311.55,114.3) .. controls (301.67,109.96) and (293.46,102.5) .. (288.16,93.18) ;  
+
+%Shape: Boxed Line [id:dp3721342518308307] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (161.67,33.27) -- (191.67,33.27) ;
+%Shape: Boxed Line [id:dp3172229534276627] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,33.27) -- (191.67,63.27) ;
+%Shape: Boxed Line [id:dp5212629188105563] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,33.27) -- (221.67,63.27) ;
+%Shape: Boxed Line [id:dp5675465040988046] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,183.27) -- (221.67,183.27) ;
+%Shape: Boxed Line [id:dp7202927705489535] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,63.27) -- (191.67,63.27) ;
+%Shape: Boxed Line [id:dp5092276311671151] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,153.27) -- (191.67,183.27) ;
+%Shape: Boxed Line [id:dp09856537256988473] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,33.27) -- (221.67,33.27) ;
+%Straight Lines [id:da9207201128217454] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (161.67,33.27) -- (161.67,93.27) ;
+\draw [shift={(161.67,56.27)}, rotate = 90] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Shape: Boxed Line [id:dp6135659357326062] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,93.27) -- (161.67,93.27) ;
+%Shape: Boxed Line [id:dp29987278620332025] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,93.27) -- (221.67,93.27) ;
+%Shape: Boxed Line [id:dp5645420723593432] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,93.27) -- (221.67,123.27) ;
+%Shape: Boxed Line [id:dp512796349122867] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,93.27) -- (191.67,123.27) ;
+%Shape: Boxed Line [id:dp08544200734686702] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,123.27) -- (161.67,123.27) ;
+%Shape: Boxed Line [id:dp007251344716708852] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,123.27) -- (221.67,123.27) ;
+%Shape: Boxed Line [id:dp372022468671378] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (281.67,123.27) -- (251.67,123.27) ;
+%Shape: Boxed Line [id:dp16802207181986673] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (281.67,33.27) -- (311.67,33.27) ;
+%Shape: Boxed Line [id:dp010741829406028525] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,33.27) -- (311.67,63.27) ;
+%Shape: Boxed Line [id:dp4930385694807232] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,33.27) -- (341.67,63.27) ;
+%Shape: Boxed Line [id:dp08350244380111804] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,63.27) -- (311.67,63.27) ;
+%Shape: Boxed Line [id:dp8705647795304325] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,33.27) -- (341.67,33.27) ;
+%Shape: Boxed Line [id:dp09487566903812439] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,93.27) -- (281.67,93.27) ;
+%Shape: Boxed Line [id:dp4467449565003223] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,93.27) -- (341.67,93.27) ;
+%Shape: Boxed Line [id:dp6555759862430016] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,93.27) -- (341.67,123.27) ;
+%Shape: Boxed Line [id:dp6429881015928276] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,93.27) -- (311.67,123.27) ;
+%Shape: Boxed Line [id:dp9933493383052265] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,123.27) -- (281.67,123.27) ;
+%Shape: Boxed Line [id:dp22629214701044487] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,123.27) -- (341.67,123.27) ;
+%Shape: Boxed Line [id:dp5605791797338285] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,153.27) -- (161.67,153.27) ;
+%Shape: Boxed Line [id:dp21107077729645585] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (161.67,123.27) -- (161.67,153.27) ;
+%Shape: Boxed Line [id:dp6037627685291229] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,123.27) -- (371.67,153.27) ;
+%Shape: Boxed Line [id:dp7248509663647659] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,183.27) -- (161.67,183.27) ;
+%Shape: Boxed Line [id:dp8948499643023982] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,213.27) -- (191.67,213.27) ;
+%Shape: Boxed Line [id:dp8316512065816155] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,213.27) -- (191.67,243.27) ;
+%Shape: Boxed Line [id:dp5466409181373546] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (191.67,243.27) -- (161.67,243.27) ;
+%Shape: Boxed Line [id:dp738241060404709] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,213.27) -- (221.67,243.27) ;
+%Shape: Boxed Line [id:dp8248899272473633] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,243.27) -- (221.67,243.27) ;
+%Shape: Boxed Line [id:dp4387660734130424] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (251.67,153.27) -- (221.67,153.27) ;
+%Shape: Boxed Line [id:dp09231026168318957] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (221.67,153.27) -- (221.67,183.27) ;
+%Shape: Boxed Line [id:dp004987953317974858] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (281.67,153.27) -- (251.67,153.27) ;
+%Shape: Boxed Line [id:dp3129885429495841] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,153.27) -- (281.67,153.27) ;
+%Shape: Boxed Line [id:dp3250621334664481] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,183.27) -- (281.67,183.27) ;
+%Shape: Boxed Line [id:dp6968262667370082] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,153.27) -- (311.67,183.27) ;
+%Shape: Boxed Line [id:dp9386922152430821] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,153.27) -- (341.67,183.27) ;
+%Shape: Boxed Line [id:dp8295491804817827] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,153.27) -- (341.67,153.27) ;
+%Shape: Boxed Line [id:dp9221615532737761] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,183.27) -- (341.67,183.27) ;
+%Shape: Boxed Line [id:dp24977202444232294] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,213.27) -- (311.67,243.27) ;
+%Shape: Boxed Line [id:dp07515950258992687] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (311.67,243.27) -- (281.67,243.27) ;
+%Shape: Boxed Line [id:dp9273354391230249] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,213.27) -- (311.67,213.27) ;
+%Shape: Boxed Line [id:dp24647337049235973] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (341.67,213.27) -- (341.67,243.27) ;
+%Shape: Boxed Line [id:dp9111717957922717] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (371.67,243.27) -- (341.67,243.27) ;
+\draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (299.3,115.31) .. controls (298.78,110.05) and (297.31,105.74) .. (294.89,102.41) .. controls (298.26,104.77) and (302.59,106.18) .. (307.86,106.62) ;
+\draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (324.47,12.44) .. controls (328.53,15.83) and (332.6,17.86) .. (336.67,18.54) .. controls (332.6,19.22) and (328.53,21.25) .. (324.47,24.64) ;
+\draw  [color={rgb, 255:red, 214; green, 69; blue, 65 }  ,draw opacity=1 ] (371.59,109.03) .. controls (366.31,108.69) and (361.83,109.45) .. (358.14,111.31) .. controls (361.03,108.36) and (363.11,104.31) .. (364.39,99.18) ;
+%Straight Lines [id:da19528287212263684] 
+\draw    (396.95,18.36) -- (396.95,119.55) ;
+\draw [shift={(396.95,119.55)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(396.95,18.36)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+%Straight Lines [id:da3466920952873117] 
+\draw    (140.55,33.56) -- (140.55,242.39) ;
+\draw [shift={(140.55,242.39)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+\draw [shift={(140.55,33.56)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (0,5.59) -- (0,-5.59)   ;
+%Straight Lines [id:da9207201128217454] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][fill={rgb, 255:red, 174; green, 14; blue, 14 }  ,fill opacity=1 ]   (271.27,52.87) -- (271.27,112.87) ;
+%Straight Lines [id:da727447266636706] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (251.67,33.27) -- (251.67,93.27) ;
+\draw [shift={(251.67,69.27)}, rotate = 270] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da8322774976347161] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (281.67,33.27) -- (281.67,93.27) ;
+\draw [shift={(281.67,56.27)}, rotate = 90] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da9953290305227123] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (371.67,33.27) -- (371.67,93.27) ;
+\draw [shift={(371.67,69.27)}, rotate = 270] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da3885684539910451] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (161.67,243.27) -- (161.67,183.27) ;
+\draw [shift={(161.67,207.27)}, rotate = 90] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da2410496204005277] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (251.67,243.27) -- (251.67,183.27) ;
+\draw [shift={(251.67,220.27)}, rotate = 270] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da06847277642029848] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (371.67,243.27) -- (371.67,183.27) ;
+\draw [shift={(371.67,220.27)}, rotate = 270] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+%Straight Lines [id:da22234560552897487] 
+\draw [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ]   (281.67,243.27) -- (281.67,183.27) ;
+\draw [shift={(281.67,207.27)}, rotate = 90] [color={rgb, 255:red, 38; green, 194; blue, 129 }  ,draw opacity=1 ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+
+% Text Node
+\draw (405.41,56.72) node [anchor=north west][inner sep=0.75pt]   [align=left] {40cm};
+% Text Node
+\draw (89.41,124.05) node [anchor=north west][inner sep=0.75pt]   [align=left] {87.5cm};
+
+
+\end{tikzpicture}

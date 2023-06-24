@@ -20,11 +20,16 @@
 \usepackage{hyperref}
 \usepackage[super]{nth}
 \usepackage{array}
+\usepackage{amssymb}
 \usepackage{subfigure}
+\usepackage{algorithm2e}
 
-% \newcommand{\unsure}[1]{\todo[backgroundcolor=red]{#1}}
-\newcommand{\unsure}[1]{} % Turned off
 
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}{Property}
+\newtheorem{assumption}{Assumption}
 
 \title{There is an Impostor Among Us:\\Defending Robot Swarms from Bad Actors}
 \author{Akshat Tripathi}
@@ -33,32 +38,45 @@
 % \newcommand{\citationneeded}{\textsuperscript{\color{blue} [citation needed]}}
 \newcommand{\citationneeded}{}
 \begin{document}
-\input{cmds.tex}
-\input{title/title.tex}
+\input{report/cmds.tex}
+\input{report/title/title.tex}
 
 \begin{abstract}
-TODO
+We are moving towards a future where robots will become increasingly ubiquitous. In this future, these robots are likely to operate in the same physical environments, requiring them to carry sensors to measure both their environments and one another. Pooling these sensor measurements has the potential to vastly improve each individual robot's view of its environment. However, sharing this information opens up the risk of bad actors sharing misinformation. If this is not accounted for, or prevented, robots may no longer trust these information pools, losing the benefits they provide. In this thesis, we will endeavour to protect robots against these attacks in a system known as the RobotWeb. 
+
+Murai et al. introduced the RobotWeb in their paper ``A Robot Web for Distributed Many-Device Localisation''. It allows a distributed network of robots to pool their sensor measurements together to improve their location and bearing estimates. However, their solution does not provide a method for protecting against misinformation attacks.
+
+In this thesis, we introduce and implement Aegis, a novel group-based distributed defence algorithm to protect the RobotWeb. In our quest to define the rules of Aegis, we first provide a detailed analysis of the vulnerabilities present in the RobotWeb and describe several methods by which an attacker could exploit them. We then present the rules of Aegis, later using them to formally prove its correctness. After this, we turn to experimentation to provide empirical confirmation that Aegis adequately defends the RobotWeb from attack. From our experiments, we find that the performance of robots using Aegis does not decrease when attacked. Finally, we shed some light on possible avenues for optimising the performance of Aegis. 
 \end{abstract}
 
 \renewcommand{\abstractname}{Acknowledgements}
 \begin{abstract}
-TODO
+I would like to express my deepest gratitude to everyone who has played a crucial role in the completion of this Master's Thesis:
+
+First and foremost, I would like to thank my supervisor, Prof. Andrew Davison. Your expertise, guidance, and unwavering support have been instrumental throughout this year. I am truly grateful for your valuable insights and the time you dedicated to helping me.
+
+I extend my sincere appreciation to Riku Murai, for his assistance and collaboration. Your knowledge, assistance, and input have been invaluable in shaping the direction of this thesis. I am grateful for your willingness to share your expertise and for your valuable feedback.
+
+Additionally, I would like to thank my friends for their continuous support and encouragement. Their presence and uplifting words have provided motivation and inspiration during challenging times. I am grateful for their friendship, which has made this journey all the more enjoyable. 
+
+Finally, I want to express my heartfelt appreciation to my family for their unwavering love, understanding, and support throughout my life. Your belief in my abilities and sacrifices has been the driving force behind my accomplishments. I am truly blessed to have such a strong support system.
+
 \end{abstract}
 
 \tableofcontents
 \listoffigures
 % \listoftables
 
-\input{introduction/introduction.tex}
-\input{background/background.tex}
-\input{related_work/related_work.tex}
-\input{attacks/attacks.tex}
-\input{defences/defences.tex}
-\input{conclusion/conclusion.tex}
-\input{appendix/appendix.tex}
+\input{report/introduction/introduction.tex}
+\input{report/background/background.tex}
+\input{report/related_work/related_work.tex}
+\input{report/attacks/attacks.tex}
+\input{report/defences/defences.tex}
+\input{report/conclusion/conclusion.tex}
+% \input{report/appendix/appendix.tex}
 
 \bibliographystyle{vancouver}
-\bibliography{bibs/sample}
+\bibliography{report/bibs/sample}
 \addcontentsline{toc}{chapter}{Bibliography}
 
 \end{document}

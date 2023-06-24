@@ -1,0 +1,85 @@
+
+
+\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+%Straight Lines [id:da7582024624443486] 
+\draw [line width=1.5]    (74.5,153.75) -- (140.5,153.75) ;
+\draw [shift={(143.5,153.75)}, rotate = 180] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=1.5]    (14.21,-4.28) .. controls (9.04,-1.82) and (4.3,-0.39) .. (0,0) .. controls (4.3,0.39) and (9.04,1.82) .. (14.21,4.28)   ;
+%Straight Lines [id:da1737175708146408] 
+\draw [line width=1.5]    (219,168.75) -- (219,200.75) ;
+\draw [shift={(219,165.75)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=1.5]    (14.21,-4.28) .. controls (9.04,-1.82) and (4.3,-0.39) .. (0,0) .. controls (4.3,0.39) and (9.04,1.82) .. (14.21,4.28)   ;
+%Straight Lines [id:da0069991711386795386] 
+\draw [line width=1.5]    (180,168.75) -- (180,250.25) ;
+\draw [shift={(180,165.75)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=1.5]    (14.21,-4.28) .. controls (9.04,-1.82) and (4.3,-0.39) .. (0,0) .. controls (4.3,0.39) and (9.04,1.82) .. (14.21,4.28)   ;
+%Straight Lines [id:da7997009254563132] 
+\draw [line width=1.5]    (219,104.75) -- (219,139.75) ;
+%Straight Lines [id:da6517634793539615] 
+\draw [line width=1.5]    (180,55.75) -- (180,140.25) ;
+%Straight Lines [id:da9381133415973326] 
+\draw [line width=1.5]    (389.5,137.25) -- (389.5,105.25) ;
+\draw [shift={(389.5,140.25)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=1.5]    (14.21,-4.28) .. controls (9.04,-1.82) and (4.3,-0.39) .. (0,0) .. controls (4.3,0.39) and (9.04,1.82) .. (14.21,4.28)   ;
+%Straight Lines [id:da20475050027342967] 
+\draw [line width=1.5]    (428.5,136.75) -- (428.5,55.25) ;
+\draw [shift={(428.5,139.75)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=1.5]    (14.21,-4.28) .. controls (9.04,-1.82) and (4.3,-0.39) .. (0,0) .. controls (4.3,0.39) and (9.04,1.82) .. (14.21,4.28)   ;
+%Straight Lines [id:da6314202210947096] 
+\draw [line width=1.5]    (389.5,200.75) -- (389.5,165.75) ;
+%Straight Lines [id:da8469144916993987] 
+\draw [line width=1.5]    (428.5,249.75) -- (428.5,165.25) ;
+%Straight Lines [id:da6059987412847359] 
+\draw [line width=1.5]    (219,104.75) -- (265,104.75) ;
+%Straight Lines [id:da8345372265263031] 
+\draw [line width=1.5]    (340,104.75) -- (389.5,104.75) ;
+%Straight Lines [id:da759250238348591] 
+\draw [line width=1.5]    (219,200.75) -- (275.5,200.75) ;
+%Straight Lines [id:da004199534393038551] 
+\draw [line width=1.5]    (326,200.75) -- (389.5,200.75) ;
+%Straight Lines [id:da6463360435279583] 
+\draw [line width=1.5]    (180,55.75) -- (236,55.75) ;
+%Straight Lines [id:da9478179483720361] 
+\draw [line width=1.5]    (372.5,55.25) -- (428.5,55.25) ;
+%Straight Lines [id:da38872862853815515] 
+\draw [line width=1.5]    (360,249.75) -- (428.5,249.75) ;
+%Straight Lines [id:da9605862890532954] 
+\draw [line width=1.5]    (180,250.25) -- (244.5,250.25) ;
+%Rounded Rect [id:dp1761614463331822] 
+\draw  [fill={rgb, 255:red, 74; green, 144; blue, 226 }  ,fill opacity=1 ] (146.5,145.35) .. controls (146.5,142.53) and (148.78,140.25) .. (151.6,140.25) -- (243.4,140.25) .. controls (246.22,140.25) and (248.5,142.53) .. (248.5,145.35) -- (248.5,160.65) .. controls (248.5,163.47) and (246.22,165.75) .. (243.4,165.75) -- (151.6,165.75) .. controls (148.78,165.75) and (146.5,163.47) .. (146.5,160.65) -- cycle ;
+
+%Rounded Rect [id:dp11855608762791614] 
+\draw  [fill={rgb, 255:red, 245; green, 166; blue, 35 }  ,fill opacity=1 ] (357.5,145.35) .. controls (357.5,142.53) and (359.78,140.25) .. (362.6,140.25) -- (454.4,140.25) .. controls (457.22,140.25) and (459.5,142.53) .. (459.5,145.35) -- (459.5,160.65) .. controls (459.5,163.47) and (457.22,165.75) .. (454.4,165.75) -- (362.6,165.75) .. controls (359.78,165.75) and (357.5,163.47) .. (357.5,160.65) -- cycle ;
+
+
+% Text Node
+\draw (384,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {Leader};
+% Text Node
+\draw (168,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {Follower};
+% Text Node
+\draw (13,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {starts up};
+% Text Node
+\draw (236.5,34.25) node [anchor=north west][inner sep=0.75pt]   [align=left] {\begin{minipage}[lt]{92.96pt}\setlength\topsep{0pt}
+\begin{center}
+not enough leaders;\\times out
+\end{center}
+
+\end{minipage}};
+% Text Node
+\draw (269,94.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {appointed};
+% Text Node
+\draw (279,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {\begin{minipage}[lt]{31.08pt}\setlength\topsep{0pt}
+\begin{center}
+retires
+\end{center}
+
+\end{minipage}};
+% Text Node
+\draw (240.5,228.75) node [anchor=north west][inner sep=0.75pt]   [align=left] {\begin{minipage}[lt]{83.84pt}\setlength\topsep{0pt}
+\begin{center}
+too many leaders;\\times out
+\end{center}
+
+\end{minipage}};
+
+
+\end{tikzpicture}

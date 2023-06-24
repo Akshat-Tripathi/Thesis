@@ -1,10 +1,13 @@
 \chapter{State of the Art}
 
-The first half of this chapter will provide the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve\unsure{Is this sentence fine?}. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis.
+The first part of this chapter (\autoref{section:background}) provides the theoretical background for this thesis. First, we will discuss the field of multi-robot systems, providing the reader with an understanding of how the field has evolved and how it may further evolve. Next, we examine RobotWeb \cite{Robotweb}, the research that this thesis seeks to build upon. Finally, we discuss various security issues present in the field to arrive at the research question for this thesis. 
 
-\section{Multi-Robot Systems}
-\unsure{Can I call this Distributed Robotics?}
-The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment \cite{MRS-Implicit-Explicit-Comms}. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible, and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competitively or collaboratively, coordinate statically or dynamically, communicate explicitly or implicitly, consist of homogeneous or heterogeneous robots, and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}.\unsure{Am I citing this too much?}
+The second part of this chapter (\autoref{section:related_work}) evaluates several different techniques that have been proposed to solve the aforementioned security issues. We will first consider the ``Wifi-Fingerprinting'' technique which uses the physical characteristics of signal propagation in networks to prevent attacks. Then we will consider techniques using the ``Proof of Work'' algorithm to deter attackers.
+
+The final part of this chapter (\autoref{section:prelim}) concludes with an overview of the preliminaries present at the start of this thesis.
+
+\section{Multi-Robot Systems} \label{section:background}
+The study of multi-robot systems concerns itself with studying how to allow multiple robots to operate in the same environment \cite{MRS-Implicit-Explicit-Comms}. Multi-robot systems have several advantages over single-robot systems; they are more effective, efficient, flexible, and resilient \cite{MultiVsSingleRobotSystems}. These robots can behave competitively or collaboratively, coordinate statically or dynamically, communicate explicitly or implicitly, consist of homogeneous or heterogeneous robots, and make decisions centrally or decentrally \cite{MultiRobotCoordinationSurvey}.
 
 \subsection{Competitive vs Collaborative Behavior}
 Multiple robots which share a common goal are considered to be behaving collaboratively, whereas if each robot aimed to complete its own goal at the expense of all others, it would be said to be behaving competitively \cite{MultiRobotCoordinationSurvey}. Examples of collaboration range from teams of robots constructing a lunar habitat \cite{LunarHabitatConstructionExample} to exploring unknown environments \cite{MultiRobotExplorationExample}.
@@ -30,7 +33,6 @@ Robots in the Robot Web move along predefined paths, estimating their location v
 This section will introduce the reader to the core concepts used in the Robot Web and assemble them to provide the reader with an understanding of how the Robot Web functions and some of its limitations.
 
 \subsection{Factor Graphs} 
-\unsure{Do I need a citation for this? I'm making up the example afaik}
 A factor graph is an undirected bipartite graph used to represent the factorisation of a probability distribution $p(X)$. A probability distribution can be said to be factorised if it is written in the form:
 
 \begin{equation}
@@ -116,22 +118,24 @@ The above equations are used by the Belief Propagation algorithm, an iterative m
 The original Belief Propagation algorithm was designed to be used in tree-like graphs, i.e. graphs without loops \cite{GaussianBP}. However, empirical evidence has shown that ``Loopy-BP'' can still converge to provide useful results in a variety of problem domains \cite{GaussianBP}. % TODO replace citations with better ones 
 
 \subsection{Gaussian Belief Propagation}
-A special case of the Belief Propagation algorithm is Gaussian Belief Propagation, which applies to problems where all variables follow a Gaussian distribution, and all factors are Gaussian functions of their inputs.
+A special case of the Belief Propagation algorithm is Gaussian Belief Propagation (henceforth referred to as GBP), which applies to problems where all variables follow a Gaussian distribution, and all factors are Gaussian functions of their inputs.
 
 Under Gaussian Belief Propagation, each message can be interpreted as a Gaussian and so must contain sufficient information to produce one. A naive way of achieving this is to include a mean vector and a covariance matrix in each message. However, this approach is computationally expensive as it requires a full matrix multiplication whenever messages are multiplied which is an order $O(n^3)$ operation. An alternative approach is to use the \textit{canonical form} of the multivariate Gaussian distribution.
 
 The canonical form uses an \textit{information vector} ($\eta$) and a \textit{precision matrix} ($\Lambda$) defined as follows:
+\begin{eqnarray}
+	\eta = \Sigma^{-1} \mu&
+	\Lambda = \Sigma^{-1} \label{eqn:canonical}
+\end{eqnarray}
 
-\begin{align*}
-    \eta = \Sigma^{-1} \mu && \Lambda = \Sigma^{-1}
-\end{align*}
-
-where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values, making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
-
-\unsure{Should I add equations for gbp?}
+where $\Sigma$ is the covariance matrix and $\mu$ is the mean vector. Now multiplying messages is made more efficient as it only requires the addition of both messages' $\eta$ and $\Lambda$ values (\autoref{eqn:gbp-sum}), making it an order $O(n^2)$ operation in the worst case. A further performance improvement can be made by recognising that the precision matrix is a sparse matrix \cite{GaussianBP}.
+\begin{eqnarray}
+	\eta_I = \underset{i \in I}{\sum} \eta_i &
+	\Lambda_I = \underset{i \in I}{\sum} \Lambda_i \label{eqn:gbp-sum}
+\end{eqnarray}
 
 \subsection{Lie Theory}
-Lie theory is a subset of group theory focussed on studying \textit{Lie groups}. Lie theory is a vast and abstract field, from which we only need to borrow a few concepts. The first is that positions and rotations can be represented as Lie groups, for example, the group $SO2$ represents a rotation in 2D space and the $SE3$ group represents a rigid motion in 3D space. The second core concept is the \textit{tangent space} which allows small deviations to be applied to the Lie group uniformly regardless of the value it operates on. This concludes our whirlwind tour of Lie theory, we invite the reader to read \cite{MicroLieTheory} for a more detailed tutorial.
+Lie theory is a subset of group theory focused on studying \textit{Lie groups}. Lie theory is a vast and abstract field, from which we only need to borrow a few concepts. The first is that positions and rotations can be represented as Lie groups, for example, the group $SO2$ represents a rotation in 2D space and the $SE3$ group represents a rigid motion in 3D space. The second core concept is the \textit{tangent space} which allows small deviations to be applied to the Lie group uniformly regardless of the value it operates on. This concludes our whirlwind tour of Lie theory, we invite the reader to read \cite{MicroLieTheory} for a more detailed tutorial.
 
 % QUESTION: Do I need this at all?
 % A group is a set of elements $G$ combined with a composition operation $\circ$, such that the following properties hold:
@@ -147,9 +151,11 @@ Lie theory is a subset of group theory focussed on studying \textit{Lie groups}.
 \subsection{Putting it all together}
 Now that we have covered all of the prerequisites to understanding how the Robot Web operates, we shall now demonstrate how they can be assembled into the Robot Web.
 
-Every robot in the Robot Web needs to estimate its current location at all times, this is called localisation. One simple localisation method is to use odometry, which uses internal sensors to measure its displacement from its previous location. Since no sensor is perfect, this introduces a small amount of noise, which can be accurately modelled using a Gaussian distribution. The Robot Web simulates odometry using a factor graph, each known position of the robot maps to a pose variable, and the variables of each pair of successive positions are connected by an odometry factor. On every timestep, the robot performs an iteration of Gaussian Belief Propagation to estimate its current position.
+Every robot in the Robot Web needs to estimate its current location and bearing at all times, this process is called localisation. One simple localisation method is to use odometry, which uses internal sensors to measure its displacement from its previous localisation. Since no sensor is perfect, this introduces a small amount of noise, which can be accurately modelled using a Gaussian distribution. The Robot Web simulates odometry using a factor graph, each known position of the robot maps to a pose variable, and the variables of each pair of successive positions are connected by an odometry factor. On every timestep, the robot performs several iterations of Gaussian Belief Propagation to estimate its current localisation.
 
-The Robot Web further improves the accuracy of robots' locations by allowing robots to measure each other using external sensors. When a robot senses another, it creates a factor in its factor graph between its and the other's latest pose variables. When each robot wants to send a message to another, it publishes the message to its \textbf{Robot Web Page}, which the other robot will eventually read and use to update its location estimate.
+The Robot Web further improves the accuracy of robots' localisations by allowing robots to measure each other using external sensors. When a robot senses another, it creates a factor in its factor graph between its and the other's latest pose variables. When each robot wants to send a message to another, it publishes the message to its \textbf{Robot Web Page}, which the other robot will eventually read and use to update its localisation.
+
+We can group the messages sent by one robot to another into two categories; the robot will either send its belief of its localisation, or its belief of the other's localisation. The first type of message is sent when the factor connecting the sender to the receiver, was created by the receiver, we call this a \textit{response}. The second type of message is sent when the connecting factor was created by the sender, we call this a \textit{request}. 
 
 \begin{figure}[!h]
     \centering

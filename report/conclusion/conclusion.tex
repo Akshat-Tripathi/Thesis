@@ -1,19 +1,30 @@
 \chapter{Conclusion}
 
-\section{Ethical Considerations}
+This project began with the RobotWeb and a few ideas on how to attack it, but none on how to defend it against these attacks. Throughout the duration of this project, we have set and achieved several sub-objectives. First, we provided a thorough analysis of the security vulnerabilities of the RobotWeb (\autoref{section:attack-analysis}), using this analysis to predict and verify the emergence of six behaviours (\autoref{section:6hyp} and \autoref{section:attacker_experiments}). Armed with this knowledge we set out to design and implement Aegis, an algorithm to defend the RobotWeb (\autoref{section:aegis}), leaving many imperfect solutions by the wayside (\autoref{section:indiv-limits}). Once we arrived at a final design for Aegis, we proved its correctness (\autoref{section:proof-correctness}) and then experimentally verified its validity for our implementation of Aegis (\autoref{section:eval-def}). Finally, we explored some techniques to tune the performance of Aegis, illuminating avenues for further research. 
 
-\begin{quote}
-    \centering 
-    ``A new device merely opens a door; it does not compel one to enter''\\
-    \attrib{Lynn White \cite{MedievalTechnology}}
-\end{quote}
+\section{Future work}
+\begin{center}
+We conclude this thesis with an exposition of future work. 
+\end{center}
 
-From the discovery of coffee leading to the ``Age of Enlightenment'' to the invention of Boolean algebra creating our modern digital age, history has repeatedly shown us that it is impossible to fully understand the implications of new discoveries and nascent technology. With this in mind, we provide a short discussion of potential ethical issues which, we believe, may arise as a consequence of the research conducted in this thesis.
+\subsection{Real World Testing}
+The most practical avenue of future work here would be to test Aegis in real-world scenarios. So far we have only had access to a RobotWeb simulator, but are aware of ongoing efforts to implement a physical RobotWeb using real robots. It then naturally follows that Aegis should be tested within it.
 
-As with all research enabling autonomous robotics, we must consider potential military applications. Many militaries today already use unmanned aerial combat vehicles in their operations, if they were to incorporate this research, they may be able to improve their performance by allowing them to share information securely. However, we do not believe that this is likely to occur as militaries tend to have highly centralised structures, where each robot would have prior knowledge about other trusted robots in the network. Whereas our research focuses on providing security to untrusted robots in decentralised networks.
+Testing Aegis in real-world scenarios will likely open a Pandora's Box of optimisation opportunities as its performance in real-world settings is likely to depend on physical characteristics not found in simulation. For example, our simulations assume that robots will move in 2-dimensional space when in reality this is impossible.
 
-Another potential misuse of this research would be enhancing the capabilities and security of surveillance robots. In this scenario, an authoritarian regime would use robots to continuously monitor their citizens. The robots would communicate with others in their immediate surroundings to coordinate their search and could be vulnerable to cyber attacks where several are hijacked. The hijacked robots would then send incorrect messages to prevent certain areas from being searched. However, it is unlikely that this research would be an ideal candidate for implementing such a dystopia, as a single party would own the robots and would find it much simpler to implement centralised security measures.
+It would also be desirable to test Aegis in a truly heterogeneous setup; where some robots may fly whilst others move on the ground, where each robot carries different sets of sensors each with different capabilities and where each robot runs asynchronously from its peers.
 
-Alongside the unethical misuses of this research, there exist several scenarios where it would confound unethical groups. One intended use case is to implement a common robotic infrastructure for autonomous robots owned by many different parties. Here the decentralised nature of the infrastructure would provide asymmetric robustness against hackers or governments seeking to unilaterally disrupt and destroy the infrastructure as they would not be a single point of failure.
+\subsection{Further Optimisation of Aegis' Policies}
+Another interesting avenue of future work would be to further optimise the Successor Identification and Retirement Policies used by Aegis. In \autoref{section:eval-def}, we laid the groundwork for this by introducing and evaluating some simple policies. Yet as we discussed, there is further scope for improving these, for example, hybrid policies could be tested, or reinforcement learning could be used to search for optimal policies. As we showed, the choice of policy does impact the overall performance of Aegis, thus optimising them may lead to substantial improvements.
 
-In conclusion, there are many scenarios where this research may be misused to the detriment of humanity, yet we are not convinced that this research would be the most appropriate in those examples. Furthermore, given how this research seeks to defend against bad actors, we believe it is more likely to be a benefit to humanity.
+
+\subsection{Privacy Preservation}
+Privacy preservation is also another promising avenue of future work. Although Aegis prevents attackers from seizing control of other robots' localisations, it does not preserve their privacy. Robots constantly send messages with their current localisations, which creates privacy concerns as nefarious agents may use these.
+
+We believe that an interesting starting point for this would be to use indirection. Instead of sharing its localisation, and its beliefs of others' localisations, a robot would share its belief of the localisation of some shared point $p$. Other robots would also measure $p$ and compare their belief of its localisation with the robots, using these to update their own beliefs. This technique would ensure that robots never publish their localisations, but instead those of their surroundings.
+
+\subsection{Path Planning}
+Work has been done to extend the principles of the RobotWeb to allow for path planning \cite{pathplanning}. Yet this also extends the vulnerabilities of the RobotWeb to the path planning algorithm. If this were to be attacked, then the attacker would have even greater control of other robots than if it were to merely control their localisations. It is for this reason that we believe that the principles of Aegis should potentially be extended to also cover path planning.
+
+\subsection{General Purpose Sensor Networks}
+Although much of this research has focused on the field of robotics, we believe that it should be possible to apply Aegis to other systems that use Gaussian Belief Propagation. These systems are most likely sensor networks.

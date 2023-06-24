@@ -6,12 +6,12 @@ The RobotWeb allows robots to improve their localisations; these are likely to b
 
 In addition to compromising others' localisations, an attacker will wish to keep its localisation uncompromised. This would mean that it would ignore any messages from robots that it has attacked, lest it inadvertently misinforms itself. However, this will come at a cost to the attacker, as it has fewer good sources of information about its localisation. If an attacker attacks all robots around it, it would effectively cut itself out of the RobotWeb, which leads us to believe that attackers would seek to perform targeted attacks. Here the attackers would either only attack a small number of robots, or attack robots at key times. Motivated attackers, seeking to attack all robots, may instead use a private version of the RobotWeb, where their attacks don't affect them.
 
-Attackers will also wish to prevent their attacks from being easily identified, as those can be easily defended against. If their attacks are defended against, the overall effectiveness of an attacker is greatly diminished. Thus it stands to reason that attackers would aim to blend into the crowd, where their messages are indistinguishable from good messages. This means that an attacker is unlikely to try to convince robots that they are 100s of kilometers away, instead opting for more subtle differences.
+Attackers will also wish to prevent their attacks from being easily identified, as those can be easily defended against. If their attacks are defended against, the overall effectiveness of an attacker is greatly diminished. Thus it stands to reason that attackers would aim to blend into the crowd, where their messages are indistinguishable from good messages. This means that an attacker is unlikely to try to convince robots that they are hundreds of kilometers away, instead opting for more subtle differences.
 
 Finally, when multiple attackers are present in an environment, it would be best for them to collaborate rather than compete. Competing attackers are likely to interfere with each others' attacks and thus reduce their overall efficacy. For this reason, we will ignore situations where this occurs.
 
 
-\section{A simplified system}
+\section{A Simplified System} \label{section:attack-analysis}
 Any theoretical investigation of the RobotWeb would require the investigator to analyse its backbone, the factor graph. However, the investigator would soon find themselves ensnared by complexity; caught in an intricate web of variable and factor nodes; messages constantly scurrying between them. Worse yet, the web would constantly be spun and unspun as robots moved closer and further from each other. In the face of this complexity, it becomes clear that simplification is needed.
 
 To start, we choose to limit our investigation to a single variable, chosen arbitrarily, in the factor graph. Fortunately, the properties of Belief Propagation allow us to reason about this variable without loss of generality. Equation \ref{eqn:bp_belief} shows that the belief of a given variable is solely dependent on its connected factors. 
@@ -39,7 +39,6 @@ We calculate the messages from each of these representative factors as such:
 	m_{f_B \rightarrow x_i} = \underset{b \in B}{\prod} m_{f_b \rightarrow x_i}
 \end{eqnarray}
 Thus the belief of the variable becomes $p(x) = m_{f_G \rightarrow x} m_{f_B \rightarrow x}$, and since $G \cup B$ covers every factor connected to the variable, we can show that this replacement can be made without altering the variable's final result by equation \ref{eqn:bp_belief}.
-
 \begin{equation}
 	p(x_i) = \underset{s \in N(i)}{\prod} m_{f_s \rightarrow x_i}
 	\tag{\ref{eqn:bp_belief}}
@@ -77,7 +76,7 @@ In 1 dimension the messages sent from $f_G$ and $f_B$ are:
 	m_{f_B \rightarrow x_i} = (\eta_B, \Lambda_B) = (\frac{\mb}{\sbsq}, \frac{1}{\sbsq}) \label{eqn:attacker_msg}
 \end{eqnarray}
 
-From \ref{eqn:bp_belief} we see that the BDA is equal to:
+From \autoref{eqn:bp_belief} we see that the BDA is equal to:
 \begin{align}
 	m_{f_G \rightarrow x} m_{f_B \rightarrow x} 
 	&= (\eta_G + \eta_B, \Lambda_G + \Lambda_B)\\
@@ -133,17 +132,13 @@ Similarly, the KL divergence between $B$ and BDA is:
 From this, we notice a disturbing detail - the KL divergence is quadratically affected by the $\mb$. This suggests that the attacker's power is unbounded, so long as it chooses an appropriate $\sbsq$. This means that an attacker can suggest absurd localisations and have its victims believe them. For example, an attacker can convince its victims that they are on the opposite side of the planet!
 
 \subsection{Crafting the perfect message}
-From the results derived in the previous section, we know that, theoretically, an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. However, in a real-life scenario, it is unlikely that the attacker would fully exploit these powers, for two reasons.
-\begin{enumerate}
-	\item Robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
-	\item Robots don't have infinite numerical precision, so large values of $\Lambda_B$ ($\frac{1}{\sbsq}$) would cause overflow errors, which would prevent the attacker from controlling the robot's belief.
-\end{enumerate}
+From the results derived in the previous section, we know that, theoretically, an attacker will seek to increase its $\mb$ to $\infty$ and decrease its $\sbsq$ to 0. However, in a real-life scenario, it is unlikely that the attacker would fully exploit these powers, for the reason that robots are unlikely to believe \textit{incredibly} incorrect values - no sensible robot would believe that it has moved 500km away in the past 3 seconds.
 
 Given these restrictions, attackers would set their values of $\mb$ to believable values, whilst choosing the largest value of $\sbsq$ possible. 
 We will now suppose that the attacker wishes to move its victim's belief from $\mg$ to $\mt$.
-As before, the attacker sends a message with the form described in equation \ref{eqn:attacker_msg}.
+As before, the attacker sends a message with the form described in \autoref{eqn:attacker_msg}.
 
-So from equation \ref{eqn:bda_distribution}, we see that:
+So from \autoref{eqn:bda_distribution}, we see that:
 \begin{equation}
 	\mt = \frac{\mg\sbsq + \mb\sgsq}{\sgsq + \sbsq}
 \end{equation}
@@ -185,7 +180,7 @@ From the above analysis, we believe that attacks can be reasoned about using a `
 
 If two messages pull the robot towards the same localisation, then their forces will be additively combined, increasing their overall strength. However, if the messages pull the robot to diametrically opposed localisations, then their forces will cancel out. Once all forces have been resolved, the variable will move to the localisation suggested by the resultant force. The strength of the variable's conviction is determined by the strength of this resultant force.
 
-\section{Hypotheses}
+\section{Hypotheses} \label{section:6hyp}
 Now using the ``Force-Based Model'', we form 6 hypotheses about the behaviour of the entire RobotWeb under attack. Later, we will experimentally verify each of these hypotheses.
 
 \subsection{There is Strength in Numbers} \label{hyp:strength_in_numbers}
@@ -215,7 +210,7 @@ Similarly to the previous hypothesis, we can assume that any other variable conn
 Attackers may not be able to prevent or limit contagion, as they would need to strongly pull unintentional victims back to a ground truth value. Since no robot has absolute certainty about the locations of any other, the attacker will pull them to values close to their ground truth. Yet, as there is no mechanism to decrease $\Lambda$, the attacker will still make the other robots overconfident about their locations, which may bias them in the long term.
 
 \subsection{Young Robots are the most Vulnerable} \label{hyp:startup_vuln}
-Robots which are have only recently joined the RobotWeb (and hence can be considered ``young'') are unlikely to have strong beliefs about their localisation. As they participate in the RobotWeb, the strength of their beliefs will increases. However, these initial weak beliefs will translate to a weaker pull towards the ground truth, and provide a weaker resistance to attackers.
+Robots which are have only recently joined the RobotWeb (and hence can be considered ``young'') are unlikely to have strong beliefs about their localisation. As they participate in the RobotWeb, the strength of their beliefs will increase. However, these initial weak beliefs will translate to a weaker pull towards the ground truth, and provide a weaker resistance to attackers.
 
 We believe that this effect may be strongly linked to the robot's history size, as once the history size has been exhausted, the robot will only make marginal gains from experience.
 
@@ -236,7 +231,7 @@ As shown previously, the strength of an attack is highly dependent on its abilit
 
 When sending a message, each robot decides the strength of the message's pull. Good robots limit their strength to the accuracy of their sensors, while attackers will set their strength to the fullest extent. This once again makes the case for the use of a reasonable upper bound on the strength of a message, similar to the one described above.
 
-However, we argue that this upper bound is unenforceable in practice, for an attacker can simply ``split'' their message into several weaker parts. So far in our analysis, we have treated $\Lambda_B$ as if it were sent in a single message, however from equation \ref{eqn:bad_pull} we can see that it may also be the result of several bad robots sending messages. If the upper bound on an individual message's $\Lambda$ is $\lambda$, then an attacker could simply send several messages from several different identities to arrive at a strong $\Lambda_B$, in a Sybil Attack. Here the strengths of each Sybil's message will increase the overall strength of the attacking force, while each message's $\Lambda$ will fly under the bound.
+However, we argue that this upper bound is unenforceable in practice, for an attacker can simply ``split'' their message into several weaker parts. So far in our analysis, we have treated $\Lambda_B$ as if it were sent in a single message, however from \autoref{eqn:bad_pull} we can see that it may also be the result of several bad robots sending messages. If the upper bound on an individual message's $\Lambda$ is $\lambda$, then an attacker could simply send several messages from several different identities to arrive at a strong $\Lambda_B$, in a Sybil Attack. Here the strengths of each Sybil's message will increase the overall strength of the attacking force, while each message's $\Lambda$ will fly under the bound.
 
 
 \subsubsection{Aside: Attacks are uncorrelated} \label{hyp:uncorrelated_sybils}
@@ -244,7 +239,7 @@ Considering the ``Force-Based Model'' of variables, it stands to reason that in 
 
 Consequently, it becomes impossible to detect whether a message belongs to an attacker based on its contents.
 
-\section{Experimental evidence}
+\section{Experimental evidence} \label{section:attacker_experiments}
 
 Now, we will evaluate the above hypotheses in a simulated environment. Our goal is to show that the predicted phenomena can arise, rather than guaranteeing their emergence. The reasoning behind this is that an attack only needs to be successful in a single situation for it to be considered potent.
 
@@ -263,9 +258,9 @@ The simulation has several configurable parameters which we will vary in our exp
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-\textbf{Parameter}    & \textbf{Description}                                                                                                          & \textbf{Default values}                                                                                        \\ \hline
-Dataset               & The physical path travelled by each robot.                                                                                    & See below                                                                                                      \\ \hline
-Attacker Dataset      & \begin{tabular}[c]{@{}c@{}}The path attackers attempt to trick the robot \\ into localising onto\end{tabular}                 & See below                                                                                                      \\ \hline
+\textbf{Parameter}    & \textbf{Description}                                                                                                          & \textbf{Default value}                                                                                        \\ \hline
+Dataset               & The physical path traveled by each robot.                                                                                    & See below                                                                                                      \\ \hline
+Attacker Dataset      & \begin{tabular}[c]{@{}c@{}}The path attackers attempt to trick the robot \\ into localising onto.\end{tabular}                 & See below                                                                                                      \\ \hline
 History size & \begin{tabular}[c]{@{}c@{}}The number of past pose variables \\ used by each robot.\end{tabular} & 1                                                                                                             \\ \hline
 N iterations per step & \begin{tabular}[c]{@{}c@{}}The number of GBP iterations performed\\  every time the robot moves.\end{tabular}                 & 10                                                                                                             \\ \hline
 SE2 Prior             & The accuracy of each robot's original position.                                                                               & \begin{tabular}[c]{@{}c@{}}$\sigma_x = 1e^{-8}$ m\\ $\sigma_y = 1e^{-8}$ m\end{tabular}                        \\ \hline
@@ -274,6 +269,8 @@ Sensor range limit    & The furthest a range-bearing sensor can detect.         
 Sensor noise model    & \begin{tabular}[c]{@{}c@{}}The noise associated with the \\ range and bearing measurements.\end{tabular}                      & \begin{tabular}[c]{@{}c@{}}$\sigma_r = 0.05$ m\\ $\sigma_\theta = 0.1$ rad\end{tabular}                        \\ \hline
 Attacker confidence   & \begin{tabular}[c]{@{}c@{}}The confidence claimed by the attacker.\end{tabular}                      & \begin{tabular}[c]{@{}c@{}}$\sigma_x = 0.001$ m\\ $\sigma_y = 0.001$ m\end{tabular} \\ \hline
 \end{tabular}
+\caption{The default parameters used in our experiments}
+\label{table:attack-expr-params}
 \end{table}
 
 \subsubsection{Path design}
@@ -294,19 +291,14 @@ We choose to use the above paths to test. The robots will move along the green p
 The first hypothesis, \ref{hyp:strength_in_numbers}, predicts the existence of a ``strength in numbers'' effect, where the effectiveness of an attack is reduced as the number of good robots increases. We test this by varying the number of robots attacked and subsequently measuring the Average Trajectory Error (ATE) per robot. For a fair comparison, we extend the range of each robot's sensors to allow for every robot to sense every other robot. We repeat this experiment 10 times.
 \begin{figure}[!h]
 	\centering
-	\subfigure[Including all loops]{
-		\includegraphics[width=7cm]{graphs/n_bots_all_loops.pdf}
-		\label{fig:strength-in-numbers-all}
-	}
-	\subfigure[Only including the final 3 loops]{
-		\includegraphics[width=7cm]{graphs/n_bots_last_3_loops.pdf}
-		\label{fig:strength-in-numbers-last-3}
-	}
-	\caption{The ``strength in numbers'' effect: as the number of robots increases, the effectiveness of an attack decreases. Note the outliers in \ref{fig:strength-in-numbers-all} occur as the weakened attacker is unable to instantly seize control of its victims.}
+        \includegraphics[width=7cm]{graphs/n_bots_all_loops.pdf}
+	\caption{The ``strength in numbers'' effect: as the number of robots increases, the effectiveness of an attack decreases.}
 	\label{fig:strength-in-numbers}
 \end{figure}
 
-Looking at \ref{fig:strength-in-numbers}, we can see that a weak ``strength in numbers'' effect does exist, as the ATE decreases whilst the number of good robots increases. However, this effect was only observable after the attackers had been weakened, such that their $\sigma_X = \sigma_y = 1$m - which is a lower confidence level than all normal robots'.
+Looking at \autoref{fig:strength-in-numbers}, we can see that a weak ``strength in numbers'' effect does exist, as the ATE decreases whilst the number of good robots increases. We also see that the spread of ATEs drastically increases after 9 robots are present, notably it is the lower bound of the ATE which decreases rather than the upper bound. We believe that this effect indicates that occasisonally good robots can gain the upper hand.
+
+However, this effect was only observable after the attackers had been weakened, such that their $\sigma_X = \sigma_y = 1$m - which is a lower confidence level than all normal robots'. Furthermore, the robots still experience a significant increase in ATE, meaning it is likely that many more robots are required to balance out an attacker.
 
 Since this effect is only visible when attackers have been weakened, it is unlikely to present a significant hurdle to real-world attackers, unless they are vastly outnumbered. Therefore it is not a viable defence strategy.
 
@@ -323,10 +315,10 @@ The second hypothesis, \ref{hyp:history}, suggests that robots keeping longer hi
 		\includegraphics[width=7cm]{graphs/history_size_history_size_no_attackers_all_loops.pdf}
 		\label{fig:history-size-no-attackers}
 	}
-	\caption{The effect of History Size on ATE: a longer history size is detrimental when attackers are present, yet provides little value otherwise.}
+	\caption{The effect of History Size on ATE: a longer history size is somewhat detrimental when attackers are present, yet provides little value otherwise.}
 \end{figure}
 
-Looking at \ref{fig:history-size-attackers} reveals that longer histories do harm robots' localisation, but only weakly. This is likely because the past poses are fully attacked by then, and so can't attack the robots further. However, \ref{fig:history-size-no-attackers} tells a different story about the value of longer histories. Here we see a negligible impact of longer history sizes on the ATE.
+Looking at \autoref{fig:history-size-attackers} reveals that longer histories do harm robots' localisation, but only weakly. Furthermore, they are not guaranteed to protect against attacks, as can be seen by the high variability. However, \autoref{fig:history-size-no-attackers} tells a different story about the value of longer histories, when no attackers are present. Here we see a negligible impact of longer history sizes on the ATE.
 
 These results show that there is no advantage to be gained by using a longer history vector, which leads us to conclude that the history size should be kept at 1 to reduce the strength of attackers. This is likely to serve as an additional benefit as it reduces the overall computation required by members of the RobotWeb.
 
@@ -347,25 +339,33 @@ The third hypothesis, \ref{hyp:contagion}, predicts that attacks will spread wit
 	\label{fig:contagion}
 \end{figure}
 
-Looking at \ref{fig:contagion-boxplot}, we can see that the fewer the number of hops from a robot to the victim, the higher its ATE will be, thus proving the existence of a contagion effect. However, we also see that the effect of the contagion decays, as the number of hops increases. This is likely because each victim does not \textit{try} to attack others, only doing so inadvertently, so the amount of influence it exerts on its neighbours is considerably lower than the influence the attacker exerts upon it. As a victim 1 hop away is less influenced, it too exerts less of an influence upon its neighbours. The overall effect of this is that the contagion is unlikely to spread rapidly and uncontrollably.
+Looking at \autoref{fig:contagion-boxplot}, we can see that the fewer the number of hops from a robot to the victim, the higher its ATE will be, thus proving the existence of a contagion effect. However, we also see that the effect of the contagion decays, as the number of hops increases. This is likely because each victim does not \textit{try} to attack others, only doing so inadvertently, so the amount of influence it exerts on its neighbours is considerably lower than the influence the attacker exerts upon it. As a victim 1 hop away is less influenced, it too exerts less of an influence upon its neighbours. The overall effect of this is that the contagion is unlikely to spread rapidly and uncontrollably.
 
-Looking at \ref{fig:contagion-vs-time}, we also see that the ATE of each affected robot increases linearly, which implies that given enough time, the contagion can overwhelm the RobotWeb.
+Looking at \autoref{fig:contagion-vs-time}, we also see that the ATE of each affected robot increases linearly, which implies that given enough time, the contagion can overwhelm the RobotWeb.
 
-This effect may somewhat deter real-world attackers from relying on any robots in the vicinity of their victims, lest they fall prey to their own attack, yet it is unlikely to act as an effective deterrent. A motivated attacker would instead find alternative means of localisation.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=\textwidth]{report/diagrams/contagion.png}
+    \caption{A demonstration of the contagion effect. Here we show the actual trajectories (black) of the victims during the experiment. The central victim quickly localises to the attacker's path (red), whilst the others are slowly infected by it. We can also see that the victims begin to curve away from the centre, which may be due to the efforts of the end victims, to ``pull'' the others back.}
+    \label{fig:contagion-sim}
+\end{figure}
+
+This effect may somewhat deter real-world attackers from relying on any robots in the vicinity of their victims, lest they fall prey to their own attack, yet it is too weak to act as an effective deterrent. A motivated attacker would instead find alternative means of localisation.
 
 \subsection{Testing hypothesis 4}
-The fourth hypothesis, \ref{hyp:startup_vuln}, posits that young robots which have recently joined the web will be the most vulnerable to attacks. We test using 2 robots; an attacker and its victim. We introduce a delay between when the victim starts and when it is attacked. We then measure the ATE of the victim across 10 runs. We also vary the victim's history size, as we believe that there is likely a link between the optimum startup delay of a robot and the size of its history. We once more weaken the attacker's attacks by reducing its confidence such that $\sigma_x = \sigma_y = 1$m.
+The fourth hypothesis, \ref{hyp:startup_vuln}, posits that young robots which have recently joined the RobotWeb will be the most vulnerable to attacks. We test using 2 robots; an attacker and its victim. We introduce a delay between when the victim starts and when it is attacked. We then measure the ATE of the victim across 10 runs. We also vary the victim's history size, as we believe that there is likely a link between the optimum startup delay of a robot and the size of its history. We once more weaken the attacker's attacks by reducing its confidence such that $\sigma_x = \sigma_y = 1$m.
 
 
 \begin{figure}[!h]
 	\centering
-	\includegraphics[width=10cm]{graphs/startup_delay.pdf}
-	\caption{The effect of a startup delay on the ATE, also investigating the effect of the history on this.}
+	\includegraphics[width=10cm]{report/graphs/startup_delay.pdf}
+	\caption{The effect of a startup delay on the ATE, we also investigate the effect of the history on this.}
 	\label{fig:startup_delay}
 \end{figure}
 
-Note: This section is still a TODO because I realised that I made a mistake in the experiment.
+Looking at \autoref{fig:startup_delay}, we can see that adding a small delay before a robot joins the RobotWeb, does reduce its ATE. However, the effect here is quite weak, seeing as the least affected victims only have an ATE 8cm lower than the most affected ones.
 
+\autoref{fig:startup_delay} also shows a definite link between the length of the delay and the history size, since larger history sizes tend to require larger delays to defend them. We once again stress that this effect is weak, and thus cannot form the basis of any serious defence strategy.
 
 \subsection{Testing hypothesis 5}
 The fifth hypothesis, \ref{hyp:mu_bound}, predicts that attackers can overcome bounds on $\mu$, by performing incremental attacks. We test this using 2 robots; an attacker and its victim. For the victim, we introduce a $\mu$ bound defence of 0.05m, so that it only believes messages which are within a 0.05m radius from its current position estimate. For the attacker, we add an onramp composed of several segments, to transition the victim to the attacker's desired path. We vary the number of the onramp's segments and measure the victim's Average Trajectory Error (ATE) over 10 runs.
@@ -385,11 +385,11 @@ The fifth hypothesis, \ref{hyp:mu_bound}, predicts that attackers can overcome b
 \end{figure}
 
 
-Analysing the ATE against the number of segments, in \ref{fig:mu-bound-all}, we see that a cliff emerges, where once the segments are short enough, the ATE significantly increases, indicating a successful attack. Thus confirming that an attacker can easily overcome bounds on $\mu$.
+Analysing the ATE against the number of segments, in \autoref{fig:mu-bound-all}, we see that a cliff emerges, where once the segments are short enough, the ATE significantly increases, indicating a successful attack. Thus confirming that an attacker can easily overcome bounds on $\mu$.
 
 Interestingly enough, we also see that the cliff starts when there are 12 segments. Here each segment would have a length of $\frac{0.6}{12} = 0.05$m, which is just outside the bound. This happens due to noise in the victim's localisation, which leads it to occasionally accept the attacker's messages. Every time the victim accepts one of these messages, it's pulled closer to the attacker's desired path, which in turn makes it more likely to accept the attacker's future messages.
 
-Looking at the victim's ATE over time in \ref{fig:mu-bound-vs-time}, we see that the victim's ATE only increases once it is firmly on the onramp. In the case where there are 12 segments, we see that the victim only partially follows the target path, which is once again likely due to its noisy localisation. 
+Looking at the victim's ATE over time in \autoref{fig:mu-bound-vs-time}, we see that the victim's ATE only increases once it is firmly on the onramp. In the case where there are 12 segments, we see that the victim only partially follows the target path, which is once again likely due to its noisy localisation. 
 
 These results mean that although the $\mu$ bound defence can be evaded, it still hinders the attacker, which must both create an onramp and wait for its victim to traverse it.
 
@@ -398,11 +398,11 @@ The sixth and final hypothesis, \ref{hyp:sybils}, asserts that an attacker can c
 
 \begin{figure}[!ht]
 	\centering
-	\subfigure[caption]{
+	\subfigure[ATE vs Number of Sybils]{
 		\includegraphics[width=7cm]{graphs/sybils_all_loops.pdf}
 		\label{fig:sybils}
 	}
-	\subfigure[caption]{
+	\subfigure[ATE vs Time]{
 		\includegraphics[width=7cm]{graphs/sybils_vs_time.pdf}
 		\label{fig:sybils-vs-time}
 	}
@@ -410,6 +410,6 @@ The sixth and final hypothesis, \ref{hyp:sybils}, asserts that an attacker can c
 \end{figure}
 
 
-From \ref{fig:sybils}, we see that the ATE quickly converges around 0.6m as the number of Sybils increases. We also see the spread of ATEs narrow. Both these facts confirm that the Sybil attack is highly effective against the RobotWeb. Notably, since the confidence level of messages sent from a Sybil is equal to that of those sent by normal robots, they blend in perfectly with normal messages. This means that a robot cannot determine the true state using messages alone. Furthermore, unlike the previous experiment, when we analyse the ATE over time, we see that the effect of this attack has no delay, which increases its potency. 
+From \autoref{fig:sybils}, we see that the ATE quickly converges around 0.6m as the number of Sybils increases. We also see the spread of ATEs narrow. Both these facts confirm that the Sybil attack is highly effective against the RobotWeb. Notably, since the confidence level of messages sent from a Sybil is equal to that of those sent by normal robots, they blend in perfectly with normal messages. This means that a robot cannot determine the true state using messages alone. Furthermore, unlike the previous experiment, when we analyse the ATE over time, we see that the effect of this attack has no delay, which increases its potency. 
 
 % TODO: Add a conclusions section?

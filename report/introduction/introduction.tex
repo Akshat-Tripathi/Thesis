@@ -1,21 +1,72 @@
 \chapter{Introduction}
+
+The field of Distributed Robotics has grown rapidly in recent years. The field, which aims to allow groups of robots to simultaneously operate in the same environment, has garnered interest as it has become increasingly relevant to a variety of industries and projects, ranging from autonomous vehicles \cite{intro1-car} and drone delivery \cite{intro2-drone} to the Mars 2020 Perseverance Mission \cite{intro3-mars}.
+
+A key focus of, and open problem in this field is that of effective communication. Robots that are allowed to freely communicate may communicate about their locations, their environment, or their plans. Doing so offers them several advantages, they can:
+\begin{enumerate}
+    \item Obtain a more accurate view of their environment by pooling their sensor data.
+    \item Carry fewer sensors, by relying upon each other for some information.
+    \item Build larger maps of their environment, in effect allowing them to ``see around corners''.
+    \item Improve their own path planning by incorporating one another's plans, instead of predicting them.
+\end{enumerate}
+
+However, conflicts between robots will inevitably arise. When they do, robots are likely to resort to deception to gain the upper hand. For example, two self-driving cars may vie for the same parking space by attempting to misinform one another. A more consequential conflict may arise when bad actors actively spread misinformation to attack the system, such as by attempting to cause collisions between robots. 
+
+If we have no defence against these attacks, then it is likely that the benefits of communication will vanish. Why would a robot choose to rely on others' information if it thinks they would mislead it? Why would a robot share information with others if it believes they will use it against it? Robots would instead return to an individualistic worldview, increasing the number of sensors they'd need to carry, the amount of computation they'd need to perform, and limiting their knowledge of the world around them.
+
+\begin{center}
+    The principal focus of this Master's Thesis is to defend robots against these attacks.
+\end{center}
+
 \section{Objectives}
+In this thesis, we build upon the work previously done by Murai et al. in \cite{Robotweb}, where they define a simple peer-to-peer communication protocol to solve the problem of distributed localisation. That is, to allow multiple moving robots to accurately estimate their locations by communicating. However, their approach assumes that no malicious actors will exist inside the RobotWeb, and as such they do not provide a defence against attacks. Our objective in this thesis is to provide this defence. We split this objective into the multiple sub-objectives below:
+\begin{enumerate}
+    \item Provide a thorough analysis of the security vulnerabilities in the RobotWeb.
+    \item Devise and implement a defence strategy which would protect the RobotWeb from these vulnerabilities.
+    \item Thoroughly analyse the strength of this defence under attack and its costs when not.
+\end{enumerate}
 
-The field of distributed robotics is a growing one, partly due to the growth of the number of applications involving it (autonomous vehicles and drone delivery systems) and partly because of increased interest in areas which would greatly benefit from it, such as the Lunar Gateway Project, or the Mars 2020 Perseverance Mission.
+\section{Contributions}
+In pursuit of our objectives, we have made the following contributions:
 
-An open problem in this distributed robotics is that of effective inter-robot communication. Inter-robot communication provides several benefits to distributed robotics; it allows robots to
-\begin{enumerate*}
-    \item acquire a more accurate view of their environment,
-    \item gain access to a larger map of the world,
-    \item improve their path planning by incorporating others' plans and
-    \item carry fewer resources, such as sensors and instead rely on others in the swarm.
-\end{enumerate*}
+\begin{enumerate}
+    \item \textbf{An Analysis of Attacks: } We considered how attackers would behave in the RobotWeb, and used this understanding to derive a mathematical expression for the strength of their attacks (\autoref{section:attack-analysis}). Then based on this understanding, we formed 6 hypotheses about the effect of attackers on the RobotWeb (\autoref{section:6hyp}). Later, we experimentally tested each of these 6 hypotheses (\autoref{section:attacker_experiments}). These left us with a series of expectations about how both normal robots and attackers would behave, which we then used to guide our design.
+    \item \textbf{The Aegis defence algorithm: } We designed the Aegis defence algorithm, which can be used to defend groups of robots in the RobotWeb. We provide a specification for its basic function (\autoref{section:aegis}) and a second distributed algorithm that governs the formation, maintenance and dissolution of groups, ensuring that these occur in a peer-to-peer manner (\autoref{section:group-formation}). 
+    \item \textbf{A Proof of Correctness for Aegis:} We used the rules governing Aegis alongside first-order logic and linear algebra to prove that Aegis is guaranteed to protect robots (\autoref{section:proof-correctness}). This guarantee allows us to be confident in the strength of the Aegis defence.
+    \item \textbf{Experimental Confirmation:} In addition to a theoretical proof of correctness, we performed a series of experiments to confirm that our implementation of Aegis carried the same correctness guarantees as its theoretical counterpart.
+    \item \textbf{Metrics for evaluating Aegis: } We defined 3 metrics that we later used to quantify the strength of Aegis (\autoref{section:eval-def}). They are the \textbf{Resistance}, \textbf{Resiliency} and \textbf{Cost of Operation}. The first two quantify Aegis' ability to defend robots under attack and to recover from attacks, whilst the latter quantifies the degradation in performance caused by using Aegis when no attackers are present.
+    \item \textbf{Tuning Aegis:} We proposed and evaluated several potential methods of improving the performance of Aegis, using the aforementioned metrics. We then used these to illuminate some available avenues for optimising Aegis.
+\end{enumerate}
 
-A subset of distributed robotics research is dedicated to finding ways to allow such communication in situations where some of the robots may act with hostility. The source of this hostility could be unnatural, where a bad actor solely seeks to disrupt the system, or it could be a natural consequence of competition in the environment, such as a self-driving car trying to prevent others from overtaking it. 
-
-This hostility must be protected against if the benefits of communication and collaboration are to be seized. This is the principal focus of this Master's Thesis.
-
+In addition to these contributions, we also made several software contributions:
+\begin{enumerate}
+    \item \textbf{An Implementation of Aegis:} We provided a software implementation of Aegis in the RobotWeb simulator discussed in \cite{Robotweb}.
+    \item \textbf{An Experiment Runner Script} We provided an extensible experiment runner for experiments on the RobotWeb simulator. This allows users to provide a high-level description of the experiments they wish to run, and then automatically configures and runs the simulation for each experiment, collecting and organising the relevant data.
+\end{enumerate}
 
 \section{Challenges}
-\section{Contributions}
-Currently, the main contributions of this paper can be found in the background research section and some of the preliminary results on the effectiveness of attacks on robot networks. This is subject to change with time.
+This has been a challenging and fulfilling project with many challenges. We list the most pertinent below:
+\begin{enumerate}
+    \item \textbf{Understanding the RobotWeb:} An initial hurdle in this project was understanding the theoretical underpinnings of the RobotWeb. This was especially challenging as it was novel research, meaning that only a few resources existed. Gaining our understanding of the RobotWeb involved learning unfamiliar mathematical concepts and techniques i.e. Gaussian Belief Propagation and elementary Lie Theory.
+    \item \textbf{Designing Aegis:} The most significant challenge in this project was designing Aegis. The final specification can be found in \autoref{section:aegis}. During the design process, we considered and eventually discarded many different approaches, as we found vulnerabilities in each of them. We have included brief discussions about these approaches and their shortcomings for posterity, which can be found in \autoref{section:indiv-limits}.
+    \item \textbf{Proving the Correctness of Aegis:} Once we had arrived at the core ideas behind Aegis, we needed to prove that they would provide a suitable defence. To perform this proof, we needed to delve into less well-known areas of linear algebra. This proof can be found in \autoref{section:proof-correctness}.
+    \item \textbf{Extending the RobotWeb Codebase:} Our implementation of Aegis is well integrated into the RobotWeb simulator. However, this codebase was originally written without attackers and defences in mind, which required us to perform significant refactorings. Furthermore, the codebase was in a pre-production state, meaning that documentation and regression tests were scarce.
+\end{enumerate}
+
+\section{Ethical Considerations}
+
+\begin{quote}
+    \centering 
+    ``A new device merely opens a door; it does not compel one to enter''\\
+    \attrib{Lynn White \cite{MedievalTechnology}}
+\end{quote}
+
+From the discovery of coffee leading to the ``Age of Enlightenment'' to the invention of Boolean algebra creating our modern digital age, history has repeatedly shown us that it is impossible to fully understand the implications of new discoveries and nascent technology. With this in mind, we provide a short discussion of potential ethical issues which, we believe, may arise as a consequence of the research conducted in this thesis.
+
+As with all research enabling autonomous robotics, we must consider potential military applications. Many militaries today already use unmanned aerial combat vehicles in their operations, if they were to incorporate this research, they may be able to improve their performance by allowing them to share information securely. However, we do not believe that this is likely to occur as militaries tend to have highly centralised structures, where each robot would have prior knowledge about other trusted robots in the network. Whereas our research focuses on providing security to untrusted robots in decentralised networks.
+
+Another potential misuse of this research would be enhancing the capabilities and security of surveillance robots. In this scenario, an authoritarian regime would use robots to continuously monitor their citizens. The robots would communicate with others in their immediate surroundings to coordinate their search and could be vulnerable to cyberattacks where several are hijacked. The hijacked robots would then send incorrect messages to prevent certain areas from being searched. However, it is unlikely that this research would be an ideal candidate for implementing such a dystopia, as a single party would own the robots and would find it much simpler to implement centralised security measures.
+
+Alongside the unethical misuses of this research, there exist several scenarios where it would confound malicious actors. One intended use case is to implement a common robotic infrastructure for autonomous robots owned by many different parties. Here the decentralised nature of the infrastructure would provide asymmetric robustness against hackers or governments seeking to unilaterally disrupt and destroy the infrastructure as there would not be a single point of failure.
+
+In conclusion, there are several potential misuses of this research, yet we are not convinced that this research will be used in any of them. Our main reason for holding this belief is that the RobotWeb is an open protocol and thus requires defence, whilst these misuses are likely to use closed systems, which do not require the defences we design in this thesis.
