@@ -1,0 +1,29 @@
+Hello everybody, and welcome to my presentation. Today I'm gonna talk about how we can defend robot swarms from bad actors.
+Now right off the bat you may have 3 questions: What do I mean by a Robot Swarm? What do I mean by a Bad Actor? and What do I propose to defend robot swarms from bad actors.
+Well luckily enough, the answers to these 3 questions happen to form the 3 main sections of my presentation.
+First I'll provide you with some background information about the research I'm extending.
+Secondly, I'll explain what a bad actor is, what its goals are, how it will try to achieve those goals and how well it'll be able to do that.
+Thirdly, and finally, I'll explain how I propose to defend robot swarms from bad actors, and how we can be sure that this solution works.
+
+What does RW do?
+Get to factor graphs
+Get to GBP
+Explain how GBP works ((mu, sigma) and (eta, Lambda))
+
+Explain why an attacker would do what it does (one reason) (loc -> movement)
+How does an attacker attack the RW - corrupted message with arb mu and high Lambda
+
+Now how effective can this be?
+Intuitively we think that there should be a limit on this, for example if mu is too far away, then it should be less effective.
+Consider 1 var - has many incoming factors
+Further simplify to just a good factor and bad factor.
+Further simplify to 1D, and we see that Lambda = 1/sigma^2
+Now we get the KL divergence
+Can see that KL increases quadratically w.r.t. mu diff, and basically there's nothing stopping it from increasing wildly.
+
+Could try to put a mu bound in but...
+Could also try to put a Lambda bound in but...
+
+Discuss other results somehow.
+
+Group bots into groups. Group has a leader and followers.
